@@ -8,7 +8,14 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { CreateDealComponent } from './create-deal/create-deal.component';
 import { FormsModule } from '@angular/forms';
 import { ViewDealComponent } from './view-deal/view-deal.component';
-
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { Barchart1Component } from './dashboard/barchart1/barchart1.component';
+import { Barchart2Component } from './dashboard/barchart2/barchart2.component';
+import { Barchart3Component } from './dashboard/barchart3/barchart3.component';
+import { Barchart4Component } from './dashboard/barchart4/barchart4.component';
+import { TableComponent } from './dashboard/table/table.component';
+import { InfoboxComponent } from './dashboard/infobox/infobox.component';
+import { ChartsModule } from 'ng2-charts';
 @NgModule({
   declarations: [
 
@@ -16,13 +23,21 @@ import { ViewDealComponent } from './view-deal/view-deal.component';
     HeaderComponent,
     SidebarComponent,
     CreateDealComponent,
-    ViewDealComponent
+    ViewDealComponent,
+    DashboardComponent,
+    Barchart1Component,
+    Barchart2Component,
+    Barchart3Component,
+    Barchart4Component,
+    TableComponent,
+    InfoboxComponent
   ],
   imports: [
-    AlertModule.forRoot(), 
+    AlertModule.forRoot(),
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    ChartsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
