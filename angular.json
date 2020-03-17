@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-  "version": 1, 
+  "version": 1,
   "newProjectRoot": "projects",
   "projects": {
     "accops-v1": {
@@ -120,6 +120,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "accops-v1"
+    }
+  },
+  "defaultProject": "accops-v1",
+  "cli": {
+    "analytics": "8c09e838-14db-4be4-94dd-944690db46ac"
+  }
 }
