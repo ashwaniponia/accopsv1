@@ -22,6 +22,9 @@ const routes: Routes = [
   {path: 'USER-PROFILE' , component : CreateDealComponent
   },
   {path: 'deal' , component : CreateDealComponent
+  },
+  {
+  path: 'login', component : Login
   }
 ];
 
