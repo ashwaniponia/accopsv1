@@ -1,0 +1,81 @@
+<div class="container">
+    <div class="row">
+        <div class="w3-bar-item w3-button w3-pink w3-left ">
+            <b>REGISTER A DEAL</b>
+        </div>
+    </div>
+
+    <div class="container">
+        <div [hidden]="submitted">
+          <form (ngSubmit)="onSubmit()" #dealForm="ngForm">
+          
+            <div class="form-group">
+                <label for="OrgName">Organisation Name</label>
+                <input type="text" class="form-control" id="OrgName"
+                       required
+                       [(ngModel)]="DummyDeal.OrgName" name="OrgName"
+                       #OrgName="ngModel">
+  
+                <div [hidden]="OrgName.valid || OrgName.pristine"
+                     class="alert alert-danger">
+                  Organisation Name is required
+                </div>
+              </div>  
+      
+              <div class="form-group">
+                <label for="amount">Amount</label>
+                <input type="text" class="form-control" id="amount"
+                       required
+                       [(ngModel)]="DummyDeal.amount" name="amount"
+                       #amount="ngModel">
+  
+                <div [hidden]="amount.valid "
+                     class="alert alert-danger">
+                  Amount is required
+                </div>
+              </div>
+
+          
+            <div class="form-group">
+              <label for="description">Description</label>
+              <input type="text" class="form-control" id="description"
+                     required
+                     [(ngModel)]="DummyDeal.description" name="description"
+                     #description="ngModel">
+
+              <div [hidden]="description.valid "
+                   class="alert alert-danger">
+                Description is required
+              </div>
+            </div>
+        
+      
+            <button type="submit" class="btn btn-success" [disabled]="!dealForm.form.valid">Submit</button>
+            <button type="button" class="btn btn-default w3-pink" (click)="newDeal(); dealForm.reset()">New Deal</button>
+          </form>
+        </div>
+      
+        <div [hidden]="!submitted">
+           <div class ="row">
+            <h2>You submitted the following:</h2>
+           </div>>
+          <div class="row">
+            <div class="col-xs-3">Organisation Name : </div>
+            <div class="col-xs-9">{{ DummyDeal.OrgName }}</div>
+          </div>
+
+          <div class="row">
+            <div class="col-xs-3">Description :</div>
+            <div class="col-xs-9">{{ DummyDeal.description }}</div>
+          </div>
+
+          <div class="row">
+            <div class="col-xs-3">Amount : </div>
+            <div class="col-xs-9">{{ DummyDeal.amount }}</div>
+          </div>
+          
+          <br>
+          <button class="btn btn-primary" (click)="submitted=false">Edit</button>
+        </div>
+      </div>
+</div>

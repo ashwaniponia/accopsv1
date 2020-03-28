@@ -1,0 +1,23 @@
+<div class = "container">
+  <app-infobox></app-infobox>
+  <ul class = "nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/DASHBOARD/bar-chart1">BarChart1</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/DASHBOARD/bar-chart2">BarChart2</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/DASHBOARD/bar-chart3">BarChart3</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/DASHBOARD/bar-chart4">BarChart4</a>
+    </li>
+  </ul>
+  <div style="padding:50px 50px 50px 50px;">
+    <router-outlet></router-outlet>
+  </div>
+  <div>
+    <app-table></app-table>
+  </div>
+</div>

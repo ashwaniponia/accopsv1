@@ -1,0 +1,128 @@
+<style>
+
+    .column1{
+        float :left;
+        width : 50%;
+        height : 100vh;
+    }
+
+    .column2{
+        float : right;
+        width : 50%;
+        height : 100vh;
+    }
+
+    .logo{
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        height: 100%;
+        width : 50%;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+
+
+    .bg_img{
+
+        height : 100vh;
+        width : 50vw;
+    }
+
+    .button{
+        display: inline-block;
+        padding: 15px 25px;
+        font-size: 24px;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        outline: none;
+        color: #fff;
+        background-color: #EF17F3;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 9px #999;
+    }
+
+    .button:hover {background-color: #f18093}
+
+    .button:active {
+        background-color: #d61867;
+        box-shadow: 0 5px #666;
+        transform: translateY(4px);
+    }
+
+    .loginpage{
+        display : flex;
+        justify-content : center;
+    }
+    
+</style>
+
+<script>
+
+    function validate()
+    {
+        type = "text/javascript"
+        var usr_name = document.getElementById("usr").value;
+        var password = document.getElementById("pass").value;
+        var reg = new RegExp('^[0-9]+$');
+        if(!reg.test(usr_name))
+            alert("Enter correct username!!!!")
+        return reg.test(usr_name);
+    }
+
+
+    function showPassword() {
+        var x = document.getElementById("pass");
+        if (x.type === "password") {
+            x.type = "text";
+        } else {
+            x.type = "password";
+        }
+    }
+
+</script>
+
+<div class="row" >
+
+    <div class="column1">
+            <img src="./assets/img/bg.jpg" alt = " Login in image " class = "bg_img">
+    </div>
+
+   
+
+    <div class="column2">
+
+        <br><br>
+        <div>
+            <img src = "./assets/img/accops.png" alt = "accops logo" class = "logo">
+            <br><br><br>
+        </div>
+        
+        <div class = "loginpage">
+            <form name = "login" action = "" onsubmit="return validate()">                
+            <label>
+                <strong>Username  </strong> 
+            </label>
+            <input  type = "text" id = "usr" value = "" placeholder="username" required>
+            <br><br><br>
+
+            <label>
+                <strong>Password  </strong> 
+            </label>
+            <input type="password" id = "pass" value = "" placeholder="Password" required>
+            <br><br>
+
+            <input type="checkbox" onclick="showPassword()">Show Password
+            <br><br><br>
+
+            <button class="button">Log in</button>
+            <br><br><br>
+
+            <span class="psw">Forgot <a href="#">password?</a></span>
+            </form>
+        </div>
+    
+    </div>
+
+  </div>
