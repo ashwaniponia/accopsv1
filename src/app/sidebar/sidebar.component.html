@@ -14,24 +14,22 @@
       <button class="w3-button w3-block w3-left-align " (click)="myAccFuncUser()">
       EDIT USER <i class="fa fa-caret-down"></i>
       </button>
-      
+
       <div id="UserRights" class="w3-hide w3-white w3-card" >
-        <a href="#" class="w3-bar-item w3-button " *ngFor ="let right of UserRights">{{right}} USER</a>
+        <a href="{{right}}" class="w3-bar-item w3-button " *ngFor ="let right of UserRights">{{right}}</a>
       </div>
 
     </div>
-    
+
     <div *ngIf="DealRightsFlag">
-      
+
       <button class="w3-button w3-block w3-left-align " (click)="myAccFuncDeal()">
         DEALS <i class="fa fa-caret-down"></i>
       </button>
-      
+
         <div id="DealRights" class="w3-hide w3-white w3-card">
-          <a href="{{right}}-deal" style="text-decoration:none" class="w3-bar-item w3-button "  *ngFor ="let right of DealRights">{{right}} DEALS</a>
+          <a href="{{right}}" style="text-decoration:none" class="w3-bar-item w3-button "  *ngFor ="let right of DealRights">{{right}}</a>
         </div>
-         
+
     </div>
   </div>
-  
-  

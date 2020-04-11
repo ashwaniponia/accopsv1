@@ -1,0 +1,44 @@
+#col2{
+  margin : 1px 1px 1px 1px;
+  padding : 60px 0px 0px 0px;
+  text-align: center;
+}
+#col1
+{
+  margin : 1px 1px 1px 1px;
+  padding : 90px 0px 0px 0px;
+  text-align:center;
+
+}
+
+#col3
+{
+  margin : 1px 1px 1px 1px;
+
+  text-align:center;
+}
+
+
+#col4
+{
+  margin : 1px 1px 1px 1px ;
+  padding : 100px 0px 0px 0px
+}
+
+#head1
+{
+  margin : 1px  1px  1px  1px;
+  padding : 0px 0px 0px 20px
+}
+#head2
+{
+  margin : 1px  1px  1px  1px;
+  padding : 0px 150px 0px 80px;
+  text-align: center;
+}
+#head3
+{
+  margin : 1px  1px  1px  1px;
+  padding : 0px 70px 0px 0px;
+  text-align: center;
+}
