@@ -7,44 +7,44 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SidebarComponent implements OnInit {
 
-  constructor() { 
+  constructor() {
   }
 
   ngOnInit(): void {
   }
-  
+
   PermanentRights =['DASHBOARD' , 'USER-PROFILE']
-  
+
   EditUserFlag = true
   DealRightsFlag = true
 
-  DealRights = ['view','create','update','delete']
-  UserRights = ['VIEW','CREATE','UPDATE','DELETE']
-  
-  
+  DealRights = ['VIEW-DEAL','CREATE-DEAL','UPDATE-DEAL']
+  UserRights = ['VIEW-USER','CREATE-USER','UPDATE-USER']
+
+
    myAccFuncUser() {
 
     var x = document.getElementById("UserRights");
     if (x.className.indexOf("w3-show") == -1) {
       x.className += " w3-show";
       x.previousElementSibling.className += " w3-red";
-    } else { 
+    } else {
       x.className = x.className.replace(" w3-show", "");
-      x.previousElementSibling.className = 
+      x.previousElementSibling.className =
       x.previousElementSibling.className.replace(" w3-red", "");
     }
   }
 
-  
+
   myAccFuncDeal() {
 
     var x = document.getElementById("DealRights");
     if (x.className.indexOf("w3-show") == -1) {
       x.className += " w3-show";
       x.previousElementSibling.className += " w3-red";
-    } else { 
+    } else {
       x.className = x.className.replace(" w3-show", "");
-      x.previousElementSibling.className = 
+      x.previousElementSibling.className =
       x.previousElementSibling.className.replace(" w3-red", "");
     }
   }

@@ -2,7 +2,7 @@
 
   <div class="row">
       <div class="w3-bar-item w3-button w3-pink w3-left ">
-          <b>View Deal</b>
+          <b>View User</b>
       </div>
   </div>
 
@@ -17,6 +17,7 @@
         <b>TIMER</b>
     </div>
   </div>-->
+
   <br>
   <br>
   <!--<div class="row" *ngFor="let item of array;">
@@ -60,69 +61,72 @@
       </div>
    </div>
   </div>-->
-
-
-  <div>
-    <input type = "text" class = "form-control" placeholder="Enter deal id to search" [(ngModel)] = "search_text">
+  <div class = "row">
+    <input type = "text" class = "form-control" placeholder = "Enter the user id to search"  [(ngModel)]="search_user_id">
   </div>
   <br>
   <br>
-  
+  <div class = "row">
+    <input type = "text" class = "form-control" placeholder = "Enter the name to search " [(ngModel)] = "search_name">
+  </div>
+  <br>
+  <br>
+  <div class = "row">
+    <input type = "text" class = "form-control" placeholder = "Enter the company to search " [(ngModel)] = "search_company">
+  </div>
+  <br>
+  <br>
+
   <table class = "table table-hover">
     <thead>
-      <th scope="col"> DEALID </th>
-      <th scope="col" style="text-align:center;"> DEAL PROGRESS </th>
-      <th scope="col" style="text-align:center;"> TIMER </th>
-      <th scope="col" > DESCRIPTION</th>
+      <th scope="col"> USER ID </th>
+      <th scope="col" > NAME </th>
+      <th scope="col" style = "padding-left : 40px" > COMPANY  </th>
+      <th scope="col" style = "text-align : center;"> PHOTO </th>
+      <th scope="col" style = "padding-left : 60px;"> DESCRIPTION </th>
+      <th scope="col" style = "padding-right : 20px;"> REMOVE </th>
     </thead>
 
     <tbody>
-      <tr *ngFor="let item of array | filter1 : search_text">
+      <tr *ngFor="let item of array | filter2 : search_user_id : search_name : search_company" [hidden]="item.Hide1">
 
         <th scope="row" style="padding: 50px 0px 0px 0px ;">
-          {{item.dealId}}
+          <b>{{item.userId}}</b>
         </th>
 
-        <td>
-          <div class="progress" style = "margin : 40px 40px 40px 40px;">
-            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{item.Progress}}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{item.Progress}}%</div>
+        <td style="padding: 50px 0px 0px 0px ;">
+          <b>{{item.name}}</b>
+        </td>
+        <td style="padding: 50px 0px 0px 50px ;">
+          <b>{{item.company}}</b>
+        </td>
+        <td  style="padding: 30px 0px 0px 0px ;">
+          <div class="container" style = "height:100px; width:100px;">
+            <img src="{{item.imge}}" class="img-fluid" alt="Responsive image">
           </div>
         </td>
-
-        <td>
-          <div class="container" style = "height:200px; width:200px;">
-          <div style="display: block">
-            <canvas baseChart
-                height ="100"
-                width="100"
-                [data]="item.pieChartData"
-                [labels]="item.pieChartLabels"
-                [chartType]="item.pieChartType"
-                [options]="item.pieChartOptions"
-                (chartHover)="item.chartHovered($event)"
-                (chartClick)="item.chartClicked($event)"
-                    >
-            </canvas>
-          </div>
-          </div>
-        </td>
-
-        <td style="padding : 50px 0px 0px 0px;">
+        <td style="padding : 50px 0px 0px 50px;">
           <p>
             <button  (click)="item.Hide = !item.Hide" class="btn btn-primary" type="button">
-              Deal Description
+              User Description
             </button>
           </p>
 
            <div [hidden]="item.Hide"  class="card card-body">
              <ul class="list-group">
-                 <li class="list-group-item"> About Deal : abcdefgh</li>
-                 <li class="list-group-item"> L1 Auth : Done </li>
-                 <li class="list-group-item"> L2 Auth : Done </li>
-                 <li class="list-group-item"> L3 Auth : Pending </li>
-                 <li class="list-group-item"> Organisation : Apple</li>
+                 <li class ="list-group-item"> Total Deals : {{item.totaldeals}}</li>
+                 <li class ="list-group-item"> Deals Accepted : {{item.accepteddeals}} </li>
+                 <li class="list-group-item"> Deals Rejected : {{item.rejecteddeals}} </li>
+                 <li class="list-group-item"> Deals Pending : {{item.dealspending}} </li>
+                 <li class="list-group-item"> Maximum Deal package obtained : {{item.maxval}}</li>
              </ul>
            </div>
+        </td>
+
+        <td style="padding: 50px 0px 0px 0px ;">
+            <button (click)="item.Hide1 = !item.Hide1" class="btn btn-danger" type="button">
+              Remove
+            </button>
         </td>
       </tr>
     </tbody>

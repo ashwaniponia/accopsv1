@@ -17,6 +17,12 @@ import { TableComponent } from './dashboard/table/table.component';
 import { InfoboxComponent } from './dashboard/infobox/infobox.component';
 import { ChartsModule } from 'ng2-charts';
 import { UpdateDealComponent } from './update-deal/update-deal.component';
+import { ViewUserComponent } from './view-user/view-user.component';
+import { UpdateUserComponent } from './update-user/update-user.component';
+import { CreateUserComponent } from './create-user/create-user.component';
+import { Filter1Pipe } from './filter1.pipe';
+import { Filter2Pipe } from './filter2.pipe';
+import { UserProfileComponent } from './user-profile/user-profile.component';
 @NgModule({
   declarations: [
 
@@ -32,7 +38,13 @@ import { UpdateDealComponent } from './update-deal/update-deal.component';
     Barchart4Component,
     TableComponent,
     InfoboxComponent,
-    UpdateDealComponent
+    UpdateDealComponent,
+    ViewUserComponent,
+    UpdateUserComponent,
+    CreateUserComponent,
+    Filter1Pipe,
+    Filter2Pipe,
+    UserProfileComponent
   ],
   imports: [
     AlertModule.forRoot(),

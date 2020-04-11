@@ -24,6 +24,7 @@
     "@ng-bootstrap/ng-bootstrap": "^6.0.0",
     "bootstrap": "^4.4.1",
     "chart.js": "^2.9.3",
+    "install": "^0.13.0",
     "jquery": "^3.4.1",
     "ng2-charts": "^2.3.0",
     "ngx-bootstrap": "^5.5.0",

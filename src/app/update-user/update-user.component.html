@@ -1,0 +1,158 @@
+<div class = "container">
+  <div class = "row">
+    <div class = "col">
+      <input type = "text" class = "form-control" placeholder="Enter the user id ">
+    </div>
+    <div class = "col">
+      <button type = "submit" class= "btn btn-primary" (click) = "func1()">Submit</button>
+    </div>
+  </div>
+
+  <div class = "row" [hidden] = "hideform">
+    <div class = "col">
+    <div class = "container">
+    <form #userform="ngForm">
+      <div class = "form-group">
+        <label for = "company"> Company </label>
+        <input type = "text" required #cmpny="ngModel" [class.is-invalid]="cmpny.invalid && cmpny.touched"  class="form-control"  name = "company" [(ngModel)] =userModel.company>
+        <small class = "text-danger" [class.d-none]="cmpny.valid || cmpny.untouched"> Name field is required </small>
+      </div>
+
+      <div class = "form-group">
+        <label for = "orgcode"> Organisation </label>
+        <input type = "text"required  #org="ngModel" [class.is-invalid]="org.invalid && org.touched" class = "form-control" name = "orgcode" [(ngModel)] =userModel.orgcode>
+          <small [class.d-none]="org.valid || org.untouched"> Organisation is required </small>
+      </div>
+
+      <div class = "form-group">
+        <label for = "username"> Username </label>
+        <input type = "text" required #usn ="ngModel"  [class.is-invalid]="usn.invalid && usn.touched" class = "form-control" name = "username" [(ngModel)] =userModel.username>
+          <small [class.d-none]="usn.valid || usn.untouched"> Username  is required </small>
+      </div>
+
+      <div class = "form-group">
+        <label for = "firstname"> Firstname </label>
+        <input type = "text" required #fsn ="ngModel"  [class.is-invalid]="fsn.invalid && fsn.touched" class = "form-control" name = "firstname" [(ngModel)] =userModel.firstname>
+          <small [class.d-none]="fsn.valid || fsn.untouched"> First name is required </small>
+      </div>
+
+      <div class = "form-group">
+        <label for = "lastname"> Lastname </label>
+        <input type = "text" required #lsn ="ngModel"  [class.is-invalid]="lsn.invalid && lsn.touched" class = "form-control" name = "lastname" [(ngModel)]= userModel.lastname  >
+          <small [class.d-none]="lsn.valid || lsn.untouched"> Last name is required </small>
+      </div>
+
+
+      <div class = "form-group">
+        <label for = "address"> Address </label>
+        <input type = "text" required #addr ="ngModel"  [class.is-invalid]="addr.invalid && addr.touched" class = "form-control" name = "address" [(ngModel)] =userModel.address>
+          <small [class.d-none]="addr.valid || addr.untouched"> Address is required </small>
+      </div>
+
+      <div class = "form-group">
+        <label for = "city"> City </label>
+        <input type = "text" required #ct ="ngModel"  [class.is-invalid]="ct.invalid && ct.touched" class = "form-control" name = "city" [(ngModel)] =userModel.city>
+          <small [class.d-none]="ct.valid || ct.untouched"> City is required </small>
+      </div>
+
+      <div class = "form-group">
+        <label for = "country"> Country </label>
+        <input type = "text" required #cntry ="ngModel"  [class.is-invalid]="cntry.invalid && cntry.touched" class = "form-control" name = "country" [(ngModel)] =userModel.country>
+          <small [class.d-none]="cntry.valid || cntry.untouched"> Country is required </small>
+      </div>
+
+      <div class = "form-group">
+        <label for = "postalcode"> Postal-Code </label>
+        <input type = "text" required #psc ="ngModel"  [class.is-invalid]="psc.invalid && psc.touched" class = "form-control" name = "postalcode" [(ngModel)] =userModel.postalcode>
+        <small [class.d-none]="psc.valid || psc.untouched"> Country is required </small>
+      </div>
+
+
+      <div class = "form-group">
+        <label class = "form-check-label">USER RIGHTS</label>
+      </div>
+
+      <div class = "form-group">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="invalidCheck2" required>
+          <label class="form-check-label" for="invalidCheck2">
+            CREATE
+          </label>
+        </div>
+      </div>
+
+      <div class = "form-group">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="invalidCheck2" required>
+          <label class="form-check-label" for="invalidCheck2">
+            UPDATE
+          </label>
+        </div>
+      </div>
+
+      <div class = "form-group">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="invalidCheck2" required>
+          <label class="form-check-label" for="invalidCheck2">
+            REMOVE
+          </label>
+        </div>
+      </div>
+
+      <div class = "form-group">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="invalidCheck2" required>
+          <label class="form-check-label" for="invalidCheck2">
+            VIEW
+          </label>
+        </div>
+      </div>
+
+      <br>
+      <br>
+
+      <div class = "form-group">
+        <label class = "form-check-label">DEAL RIGHTS</label>
+      </div>
+
+      <div class = "form-group">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="invalidCheck2" required>
+          <label class="form-check-label" for="invalidCheck2">
+            CREATE
+          </label>
+        </div>
+      </div>
+
+      <div class = "form-group">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="invalidCheck2" required>
+          <label class="form-check-label" for="invalidCheck2">
+            UPDATE
+          </label>
+        </div>
+      </div>
+
+      <div class = "form-group">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="invalidCheck2" required>
+          <label class="form-check-label" for="invalidCheck2">
+            VIEW
+          </label>
+        </div>
+      </div>
+
+
+      <button (click)="func2()" class = "btn btn-primary" type="submit">Submit form</button>
+    </form>
+    </div>
+    </div>
+    <div class = "col">
+      <img src="assets/img/images.jpg" class="img-fluid" alt="Responsive image">
+    </div>
+  </div>
+
+  <div class="row" [hidden]="hidemsg">
+    <b>Form Updated Successfully </b>
+  </div>
+</div>
