@@ -14,7 +14,7 @@ import { CreateUserComponent} from './create-user/create-user.component';
 import { ViewUserComponent } from './view-user/view-user.component';
 import { UpdateUserComponent} from './update-user/update-user.component';
 const routes: Routes = [
-  {path: '' , component : CreateDealComponent
+  {path: '', redirectTo: '/DASHBOARD', pathMatch : 'full'
   },
   {path: 'DASHBOARD' , component : DashboardComponent ,
     children : [
@@ -26,7 +26,7 @@ const routes: Routes = [
   },
   {path: 'USER-PROFILE' , component : UserProfileComponent
   },
-  {path: 'create-deal' , component : CreateDealComponent
+  {path: 'CREATE-DEAL' , component : CreateDealComponent
   },
   {
     path :'UPDATE-DEAL', component : UpdateDealComponent

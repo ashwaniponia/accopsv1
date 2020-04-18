@@ -23,6 +23,7 @@ import { CreateUserComponent } from './create-user/create-user.component';
 import { Filter1Pipe } from './filter1.pipe';
 import { Filter2Pipe } from './filter2.pipe';
 import { UserProfileComponent } from './user-profile/user-profile.component';
+import { HttpClientModule } from '@angular/common/http';
 @NgModule({
   declarations: [
 
@@ -51,7 +52,8 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    ChartsModule
+    ChartsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
