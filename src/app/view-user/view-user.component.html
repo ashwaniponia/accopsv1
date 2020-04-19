@@ -91,11 +91,11 @@
       <tr *ngFor="let item of array | filter2 : search_user_id : search_name : search_company" [hidden]="item.Hide1">
 
         <th scope="row" style="padding: 50px 0px 0px 0px ;">
-          <b>{{item.userId}}</b>
+          <b>{{item._id}}</b>
         </th>
 
         <td style="padding: 50px 0px 0px 0px ;">
-          <b>{{item.name}}</b>
+          <b>{{item.username}}</b>
         </td>
         <td style="padding: 50px 0px 0px 50px ;">
           <b>{{item.company}}</b>
@@ -124,7 +124,7 @@
         </td>
 
         <td style="padding: 50px 0px 0px 0px ;">
-            <button (click)="item.Hide1 = !item.Hide1" class="btn btn-danger" type="button">
+            <button (click)="deleteUser(item._id)" class="btn btn-danger" type="button">
               Remove
             </button>
         </td>

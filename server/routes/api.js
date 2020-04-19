@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const users = require('../models/viewusers');
+
 mongoose.connect('mongodb://localhost:27017/accops' , function(err){
   if(err)
   {
@@ -15,7 +16,7 @@ mongoose.connect('mongodb://localhost:27017/accops' , function(err){
 
 router.get('/viewusers' , function(req , res){
   console.log('Get request of all users');
-  users.find({}).exec(function(err , viewusers){
+  users.find({},{}).exec(function(err , viewusers){
     if(err){
       console.log("Error retrieving users");
     }
@@ -24,8 +25,16 @@ router.get('/viewusers' , function(req , res){
     }
   });
 });
-router.get('/' , function(req , res){
-  res.send('api works');
+
+router.get('/removeuser/delete/:id' , function(req , res){
+  console.log('Delete request for the given user');
+  users.deleteOne({"_id":req.params.id}).exec(function(err,viewusers){
+  	if(err){
+  		console.log("Error in deleting record");
+  	}else{
+  		console.log("Successful Deletion Process");
+  	}
+  });
 });
 
 module.exports = router;

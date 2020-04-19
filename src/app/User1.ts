@@ -1,14 +1,23 @@
 export interface User1{
-  id : string,
-  userId : string,
-  name : string,
-  imge : string,
-  company : string,
-  totaldeals : number,
-  acceptedeals : number,
-  rejecteddeals : number,
-  dealspending : number,
-  maxval : string,
-  Hide : boolean,
-  Hide1 : boolean,
+    username : string,
+    imge : string ,
+    company : string,
+    address : string,
+    city : string,
+    country : string,
+    firstname : string,
+    lastname : string,
+    orgcode : string,
+    postalcode : number,
+
+    totaldeals : number,
+    acceptedeals : number,
+    rejecteddeals : number,
+    
+    dealspending : number,
+    
+    maxval : number,
+    Hide : boolean,
+
+    Hide1 : boolean
 }

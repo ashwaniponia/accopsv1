@@ -1,0 +1,22 @@
+db.users.insert(
+{	
+  
+  "username" : "Karan Bajwa",
+  "imge " : "NP",
+  "company": "Accops",
+  "address": "AIT,Pune",
+  "city":"Pune",
+  "country" :"India",
+  "firstname" : "Karan",
+  "lastname" : "Bajwa",
+  "orgcode" : "120",
+  "postalcode" : 411015,
+  "totaldeals" : 5,
+  "acceptedeals" : 4,
+  "rejecteddeals" :1,
+  "dealspending" : 0,
+  "maxval" : 100,
+  "Hide" : true,
+  "Hide1" : false
+}
+)
