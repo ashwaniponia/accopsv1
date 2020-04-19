@@ -8,14 +8,14 @@ import {User} from '../user';
   providers : [UserServiceService]
 })
 export class CreateUserComponent implements OnInit {
-   userModel = new User('' , 'A1234' , 'contender' , 'Karandeep' , 'Bajwa' , '501 Rose building Regency Meadows Dhanori Pune ' , 'Pune' , 'India' , '411015');
+   userModel = new User('Accops' , 'A1234' , 'contender' , 'Karandeep' , 'Bajwa' , '501 Rose building Regency Meadows Dhanori Pune ' , 'Pune' , 'India' , 411015);
    hideform = false;
    hidemsg = true;
 
    func1()
    {
      this.hideform = true;
-     //this.createUser();
+     this.createUser();
      this.hidemsg = false;
    }
 
@@ -31,14 +31,14 @@ export class CreateUserComponent implements OnInit {
   ngOnInit(): void {
   }
 
-//  createUser() : void {
-//     //console.log(id)
-//       this._userservice.params.subscribe(params => { 
-//        this.addUser(this.userModel.address,this.userModel.city,this.userModel.company,this.userModel.country,this.userModel.firstname,this.userModel.lastname,this.userModel.orgcode,this.userModel.postalcode,this.userModel.username);
-//      },
-//      error =>console.log(error),() =>{
-//        console.log('UserApiService : Delete completed')
-//      });
-//    }
+ createUser() : void {
+      console.log(this.userModel.address);
+      this._userservice.addUser(this.userModel.address,this.userModel.city,this.userModel.company,this.userModel.country,this.userModel.firstname,this.userModel.lastname,this.userModel.orgcode,this.userModel.postalcode,this.userModel.username).subscribe(params => { 
+       console.log('success');
+     },
+     error =>console.log(error),() =>{
+       console.log('UserApiService : Create User completed')
+     });
+   }
 
 }

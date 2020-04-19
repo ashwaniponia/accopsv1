@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const users = require('../models/viewusers');
+var bodyParser = require('body-parser');
 
 mongoose.connect('mongodb://localhost:27017/accops' , function(err){
   if(err)
@@ -14,9 +15,10 @@ mongoose.connect('mongodb://localhost:27017/accops' , function(err){
 });
 
 
+
 router.get('/viewusers' , function(req , res){
   console.log('Get request of all users');
-  users.find({},{}).exec(function(err , viewusers){
+  users.find({}).exec(function(err , viewusers){
     if(err){
       console.log("Error retrieving users");
     }
@@ -36,5 +38,21 @@ router.get('/removeuser/delete/:id' , function(req , res){
   	}
   });
 });
+
+
+router.post('/adduser' , function(req , res){
+ 
+ console.log(req.body);
+
+  users.create(req.body,function(err,result){
+    if(err){
+      console.log("Error in deleting record");
+    }else{
+      console.log("Successful Addition Process");
+    }
+  });
+
+});
+
 
 module.exports = router;

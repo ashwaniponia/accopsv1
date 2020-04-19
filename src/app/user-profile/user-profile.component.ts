@@ -8,7 +8,7 @@ import { User } from '../user';
 export class UserProfileComponent implements OnInit {
 
 
-  userModel = new User('Accops' , 'A1234' , 'contender' , 'Karandeep' , 'Bajwa' , '501 Rose building Regency Meadows Dhanori Pune ' , 'Pune' , 'India' , '411015');
+  userModel = new User('Accops' , 'A1234' , 'contender' , 'Karandeep' , 'Bajwa' , '501 Rose building Regency Meadows Dhanori Pune ' , 'Pune' , 'India' , 411015);
   constructor() { }
 
   ngOnInit(): void {

@@ -9,6 +9,6 @@ export class User {
         public address : string,
         public city : string,
         public country : string,
-        public postalcode : string,
+        public postalcode : number
         ) {}
 }
