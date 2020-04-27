@@ -7,6 +7,7 @@ import { HeaderComponent } from './header/header.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { CreateDealComponent } from './create-deal/create-deal.component';
 import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { ViewDealComponent } from './view-deal/view-deal.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { Barchart1Component } from './dashboard/barchart1/barchart1.component';
@@ -24,6 +25,7 @@ import { Filter1Pipe } from './filter1.pipe';
 import { Filter2Pipe } from './filter2.pipe';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { HttpClientModule } from '@angular/common/http';
+
 @NgModule({
   declarations: [
 
@@ -53,7 +55,8 @@ import { HttpClientModule } from '@angular/common/http';
     AppRoutingModule,
     FormsModule,
     ChartsModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
