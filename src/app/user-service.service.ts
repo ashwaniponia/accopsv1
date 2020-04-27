@@ -40,11 +40,12 @@ export class UserServiceService {
    return this._http.get(`${this._remApi}/delete/${id}`);
   }
 
-  addUser(address,city,company,country,firstname,lastname,orgcode,postalcode,username): Observable<any>{
+  addUser(ans): Observable<any>{
 
-    let img = "ABC",totaldeals =0,acceptedeals=0,rejecteddeals=0,dealspending=0,maxval=1000,Hide=true,Hide1=false
+    let totaldeals =0,acceptedeals=0,rejecteddeals=0,dealspending=0,maxval=1000,Hide=true,Hide1=false , username = ans.username , imge = ans.imge, company = ans.company ,address = ans.address, city = ans.city,country = ans.country,firstname = ans.firstname,lastname = ans.lastname,orgcode = ans.orgcode,postalcode = ans.postalcode , urights = ans.urights , drights = ans.drights;
+
     const obj ={
-      username,img,company,address,city,country,firstname,lastname,orgcode,postalcode,totaldeals,acceptedeals,rejecteddeals,dealspending,maxval,Hide,Hide1
+       username ,imge, company ,address,city,country,firstname,lastname,orgcode,postalcode,totaldeals,acceptedeals,rejecteddeals,dealspending,maxval,Hide,Hide1 , urights , drights
     };
     return this._http.post(`${this._addApi}`,obj)
   }

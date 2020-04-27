@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const users = require('../models/viewusers');
-<<<<<<< HEAD
+const crusers = require('../models/createuser');
+
 const deals = require('../models/viewdeals');
 
-=======
 var bodyParser = require('body-parser');
 const upusers = require('../models/updateuser');
 
@@ -19,7 +19,6 @@ const upusers = require('../models/updateuser');
       console.log("MongoClient Connected!!");
     }
   });
->>>>>>> ed4ec181742e102dfddf582a48573da48e4c09c4
 
 
 
@@ -100,20 +99,15 @@ router.get('/removeuser/delete/:id' , function(req , res){
 
 
 router.post('/adduser' , function(req , res){
-<<<<<<< HEAD
- 
-=======
 
  console.log(req.body);
 
->>>>>>> ed4ec181742e102dfddf582a48573da48e4c09c4
-  users.create(req.body,function(err,result){
+  crusers.create(req.body,function(err,result){
     if(err){
-      console.log("Error in Adding record");
-      res.status(400).send("unable to add to database")
+      console.log(err);
+      res.json("Error");
     }else{
-      console.log("Successful Addition Process");
-      res.status(200).json({'User':'User added Successful'})
+      res.json("User Created successfully");
     }
   });
 
@@ -123,7 +117,7 @@ router.post('/adduser' , function(req , res){
 
 
 router.post('/Dealexist',function(req,res){
-      
+
      deals.count({"orgname":req.body.orgname,"description":req.body.description,"amount":req.body.amount},function(err,count){
       console.log(count)
       if(err){
@@ -139,7 +133,7 @@ router.post('/Dealexist',function(req,res){
 
 router.post('/addDeal',function(req,res){
  console.log(req.body);
-      
+
            deals.create(req.body,function(err,result){
               if(err){
               console.log("Error in Adding record");
@@ -147,7 +141,7 @@ router.post('/addDeal',function(req,res){
            }else{
               console.log("Successful Addition Process");
               res.status(200).json({'Deal':'Deal added Successful'})
-            }      
+            }
            });
 });
 
