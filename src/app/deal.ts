@@ -4,5 +4,5 @@ export class Deal {
         public description : string,
         public amount : number,
         public OrgName : string,
-        public ApprovalLevel : number) {}
+        public level : number) {}
 }

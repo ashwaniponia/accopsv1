@@ -1,5 +1,10 @@
+import { dealexist } from './../dealexist';
+import { Observable } from 'rxjs';
+import { DealService } from './../deal.service';
 import { Component, OnInit } from '@angular/core';
 import {Deal} from '../deal'
+import { promise } from 'protractor';
+import { resolve } from 'dns';
 
 @Component({
   selector: 'app-create-deal',
@@ -8,13 +13,21 @@ import {Deal} from '../deal'
 })
 export class CreateDealComponent implements OnInit {
 
-  constructor() { }
+  public exist ;
+  constructor(private _dealservice:DealService) { }
   
   DummyDeal = new Deal('XYZ',50,'ABC',0);
   submitted = false;
 
-  onSubmit(){
-    this.submitted = true;
+   onSubmit(){
+  
+    this.existDeal();
+     if(this.exist.exist == true){
+       this.submitted = false;
+     }else{
+       this.createDeal();
+       this.submitted = true;
+     }
   }
 
   ngOnInit(): void {
@@ -22,6 +35,20 @@ export class CreateDealComponent implements OnInit {
 
   newDeal(){
     this.DummyDeal = new Deal('',0,'',0)
+  }
+  
+  existDeal(){
+      this._dealservice.dealExist(this.DummyDeal.OrgName,this.DummyDeal.amount,this.DummyDeal.description).subscribe(resUserData =>{
+         this.exist = resUserData;
+    })
+  }
+
+  createDeal(){
+     this._dealservice.addDeal(this.DummyDeal.OrgName,this.DummyDeal.amount,this.DummyDeal.description).subscribe(params =>{
+       console.log("Success");
+     },error =>console.log(error),() =>{
+      console.log('UserApiService : Create User completed')
+    });
   }
 
 }

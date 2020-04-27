@@ -22,9 +22,10 @@ export class ViewUserComponent implements OnInit {
     this._userservice.getUsers().subscribe(resUserData => this.array = resUserData);
   }
   
-  deleteUser(id) : void {
+  deleteUser(item) : void {
    //console.log(id)
-     this._userservice.removeUser(id).subscribe(TempData => { 
+     item.Hide1 = true;
+     this._userservice.removeUser(item._id).subscribe(TempData => { 
       console.log('Success')
     },
     error =>console.log(error),() =>{
