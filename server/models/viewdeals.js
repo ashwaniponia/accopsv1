@@ -2,18 +2,16 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const DealSchema = new Schema({  
- 
+const DealSchema = new Schema({
+
     dealprogress : Number,
-    TimeRemaining : Number,
+    Time : [{type : Number}],
     description : String,
+    username : String,
     orgname: String,
-    orgcode : String,
     amount :Number,
     level : Number,
-    hide1 : Boolean,
-    hide2 : Boolean
-
+    Hide : Boolean
 });
 
 

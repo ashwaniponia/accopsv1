@@ -8,34 +8,34 @@
     <div class="container">
         <div [hidden]="submitted">
           <form (ngSubmit)="onSubmit()" #dealForm="ngForm">
-          
+
             <div class="form-group">
                 <label for="OrgName">Organisation Name</label>
                 <input type="text" class="form-control" id="OrgName"
                        required
                        [(ngModel)]="DummyDeal.OrgName" name="OrgName"
                        #OrgName="ngModel">
-  
+
                 <div [hidden]="OrgName.valid || OrgName.pristine"
                      class="alert alert-danger">
                   Organisation Name is required
                 </div>
-              </div>  
-      
+              </div>
+
               <div class="form-group">
                 <label for="amount">Amount</label>
                 <input type="text" class="form-control" id="amount"
                        required
                        [(ngModel)]="DummyDeal.amount" name="amount"
                        #amount="ngModel">
-  
+
                 <div [hidden]="amount.valid "
                      class="alert alert-danger">
                   Amount is required
                 </div>
               </div>
 
-          
+
             <div class="form-group">
               <label for="description">Description</label>
               <input type="text" class="form-control" id="description"
@@ -48,13 +48,26 @@
                 Description is required
               </div>
             </div>
-        
-      
+
+            <div class="form-group">
+              <label for="time">Time allocated</label>
+              <input type="text" class="form-control" id="time"
+                     required
+                     [(ngModel)]="DummyDeal.time" name="time"
+                     #time="ngModel">
+
+              <div [hidden]="time.valid "
+                   class="alert alert-danger">
+                Description is required
+              </div>
+            </div>
+
+
             <button type="submit" class="btn btn-success" [disabled]="!dealForm.form.valid">Submit</button>
             <button type="button" class="btn btn-default w3-pink" (click)="newDeal(); dealForm.reset()">New Deal</button>
           </form>
         </div>
-      
+
         <div [hidden]="!submitted">
            <div class ="row">
             <h2>You submitted the following:</h2>
@@ -73,7 +86,11 @@
             <div class="col-xs-3">Amount : </div>
             <div class="col-xs-9">{{ DummyDeal.amount }}</div>
           </div>
-          
+
+          <div class="row">
+            <div class="col-xs-3">Time Allocated : </div>
+            <div class="col-xs-9">{{ DummyDeal.time }}</div>
+          </div>
           <br>
           <a href="DASHBOARD" class="w3-bar-item w3-button " style="text-decoration: none;"  >Successful</a>
 

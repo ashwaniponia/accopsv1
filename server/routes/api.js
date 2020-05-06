@@ -3,7 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const users = require('../models/viewusers');
 const crusers = require('../models/createuser');
-
+const bcrypt = require('bcryptjs');
 const deals = require('../models/viewdeals');
 
 var bodyParser = require('body-parser');
@@ -143,6 +143,17 @@ router.post('/addDeal',function(req,res){
               res.status(200).json({'Deal':'Deal added Successful'})
             }
            });
+});
+
+
+router.get('/viewdeals', function(req , res){
+  deals.find({}).exec(function(err , dealdata){
+      if(err)
+      console.log("Error");
+      else {
+        res.json(dealdata);
+      }
+  });
 });
 
 
