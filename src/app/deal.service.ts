@@ -19,8 +19,8 @@ export class DealService {
   }
 
   addDeal(orgname,amount,description , time):Observable<any>{
-    let dealprogress = 0,TimeRemaining = 30, level = 0 , Hide = true , Time = [time , 0];
-    const obj ={ dealprogress,TimeRemaining,description,orgname,amount,level ,Hide , Time  };
+    let dealprogress = 0,level = 0 , Hide = true , Time = time , username = "karan@99";
+    const obj ={ dealprogress,description,orgname,amount,level ,Hide , Time , username  };
       return this._http.post(`${this._addApi}`,obj)
 
   }

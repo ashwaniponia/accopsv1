@@ -5,10 +5,10 @@ const users = require('../models/viewusers');
 const crusers = require('../models/createuser');
 const bcrypt = require('bcryptjs');
 const deals = require('../models/viewdeals');
-
+const adddeal = require('../models/adddeals');
 var bodyParser = require('body-parser');
 const upusers = require('../models/updateuser');
-
+const moment = require('moment');
 
   mongoose.connect('mongodb+srv://kb99:kb99@cluster0-rphf4.mongodb.net/accops?retryWrites=true&w=majority' , function(err){
     if(err)
@@ -133,8 +133,22 @@ router.post('/Dealexist',function(req,res){
 
 router.post('/addDeal',function(req,res){
  console.log(req.body);
+           var current_date = new Date();
+           var deal = {
+              dealprogress : req.body.dealprogress,
+              description : req.body.description,
+              orgname : req.body.orgname,
+              amount : req.body.amount,
+              level : req.body.level ,
+              Hide : req.body.Hide ,
+              issued_date :  current_date,
+              completion_time : req.body.Time,
+              username : req.body.username
+           };
 
-           deals.create(req.body,function(err,result){
+           console.log(deal);
+
+           adddeal.create(deal,function(err,result){
               if(err){
               console.log("Error in Adding record");
               res.status(400).send("unable to add to database")
@@ -147,11 +161,58 @@ router.post('/addDeal',function(req,res){
 
 
 router.get('/viewdeals', function(req , res){
-  deals.find({}).exec(function(err , dealdata){
+  adddeal.find({}).exec(function(err , dealdata){
       if(err)
       console.log("Error");
       else {
-        res.json(dealdata);
+        var current_date = new Date();
+        var end = moment(current_date , "DD.MM.YYYY");
+        var array = [];
+        for(var i =0 ; i < dealdata.length ; i++)
+        {
+          var start = moment(dealdata[i].issued_date , "DD.MM.YYYY");
+
+
+          var rem = moment.duration(end.diff(start));
+          var days_completed = rem.asDays();
+          var sub = 0;
+          var cmp = dealdata[i].completion_time;
+          var completed = 0;
+          if(days_completed < cmp)
+          {
+            completed = cmp;
+          }
+          else {
+            completed = days_completed;
+          }
+          if(cmp < days_completed)
+          {
+            sub = cmp;
+          }
+          else
+          {
+            sub = days_completed;
+          }
+          console.log(completed);
+          //console.log(days_remaining);
+          var days_remaining = dealdata[i].completion_time-sub;
+          console.log(days_remaining);
+          var x;
+          x = {
+            _id : dealdata[i]._id,
+            dealprogress : dealdata[i].dealprogress,
+            description : dealdata[i].description,
+            orgname : dealdata[i].orgname,
+            username : dealdata[i].username,
+            amount : dealdata[i].amount,
+            level : dealdata[i].level ,
+            Hide : dealdata[i].Hide ,
+            Time : [Math.round(days_remaining) , Math.round(sub)]
+          };
+          array.push(x);
+        }
+        console.log(array);
+        res.json(array);
       }
   });
 });
