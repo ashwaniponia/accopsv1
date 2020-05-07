@@ -15,12 +15,12 @@ export class CreateDealComponent implements OnInit {
 
   public exist ;
   constructor(private _dealservice:DealService) { }
-  
-  DummyDeal = new Deal('XYZ',50,'ABC',0);
+
+  DummyDeal = new Deal('XYZ',50,'ABC',0, 0);
   submitted = false;
 
    onSubmit(){
-  
+
     this.existDeal();
      if(this.exist.exist == true){
        this.submitted = false;
@@ -34,9 +34,9 @@ export class CreateDealComponent implements OnInit {
   }
 
   newDeal(){
-    this.DummyDeal = new Deal('',0,'',0)
+    this.DummyDeal = new Deal('',0,'',0,0)
   }
-  
+
   existDeal(){
       this._dealservice.dealExist(this.DummyDeal.OrgName,this.DummyDeal.amount,this.DummyDeal.description).subscribe(resUserData =>{
          this.exist = resUserData;
@@ -44,7 +44,7 @@ export class CreateDealComponent implements OnInit {
   }
 
   createDeal(){
-     this._dealservice.addDeal(this.DummyDeal.OrgName,this.DummyDeal.amount,this.DummyDeal.description).subscribe(params =>{
+     this._dealservice.addDeal(this.DummyDeal.OrgName,this.DummyDeal.amount,this.DummyDeal.description , this.DummyDeal.time).subscribe(params =>{
        console.log("Success");
      },error =>console.log(error),() =>{
       console.log('UserApiService : Create User completed')

@@ -5,7 +5,8 @@ const Schema = mongoose.Schema;
 const DealSchema = new Schema({
 
     dealprogress : Number,
-    Time : [{type : Number}],
+    completion_time : Number,
+    issued_date : Date,
     description : String,
     username : String,
     orgname: String,
@@ -15,4 +16,4 @@ const DealSchema = new Schema({
 });
 
 
-module.exports = mongoose.model('deal' , DealSchema , 'deals');
+module.exports = mongoose.model('addeal' , DealSchema , 'deals');
