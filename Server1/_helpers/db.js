@@ -4,6 +4,12 @@ const connectionOptions = { useCreateIndex: true, useNewUrlParser: true, useUnif
 mongoose.connect(process.env.MONGODB_URI || config.connectionString, connectionOptions);
 mongoose.Promise = global.Promise;
 
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  console.log("we're connected");
+});
+
 module.exports = {
     User: require('../users/user.model')
 };
