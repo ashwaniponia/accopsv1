@@ -5,22 +5,31 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent  {
+ 
+ public PermanentRights ;
+ public EditUserFlag ;
+ public DealRightsFlag ;
+
+ public DealRights ;
+ public UserRights ;
+
 
   constructor() {
+     
+  this.PermanentRights =['DASHBOARD' , 'USER-PROFILE']
+
+  this.EditUserFlag = true
+  this.DealRightsFlag = true
+
+  this.DealRights = ['VIEW-DEAL','CREATE-DEAL','UPDATE-DEAL']
+  this.UserRights = ['VIEW-USER','CREATE-USER','UPDATE-USER']
+
+
   }
 
   ngOnInit(): void {
   }
-
-  PermanentRights =['DASHBOARD' , 'USER-PROFILE']
-
-  EditUserFlag = true
-  DealRightsFlag = true
-
-  DealRights = ['VIEW-DEAL','CREATE-DEAL','UPDATE-DEAL']
-  UserRights = ['VIEW-USER','CREATE-USER','UPDATE-USER']
-
 
    myAccFuncUser() {
 

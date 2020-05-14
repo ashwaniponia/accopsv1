@@ -1,48 +1,62 @@
-import { UpdateDealComponent } from './update-deal/update-deal.component';
-import { CreateDealComponent } from './create-deal/create-deal.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import {FlexLayoutModule} from '@angular/flex-layout';
+import { HomeComponent } from './home';
+import { AuthGuard } from './_helpers';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { Barchart1Component } from './dashboard/barchart1/barchart1.component';
 import { Barchart2Component } from './dashboard/barchart2/barchart2.component';
 import { Barchart3Component } from './dashboard/barchart3/barchart3.component';
 import { Barchart4Component } from './dashboard/barchart4/barchart4.component';
-import { UserProfileComponent} from './user-profile/user-profile.component';
-import { ViewDealComponent} from './view-deal/view-deal.component';
-import { CreateUserComponent} from './create-user/create-user.component';
+import { UserProfileComponent } from './user-profile/user-profile.component';
+import { CreateDealComponent } from './create-deal/create-deal.component';
+import { UpdateDealComponent } from './update-deal/update-deal.component';
+import { ViewDealComponent } from './view-deal/view-deal.component';
+import { CreateUserComponent } from './create-user/create-user.component';
 import { ViewUserComponent } from './view-user/view-user.component';
-import { UpdateUserComponent} from './update-user/update-user.component';
+import { UpdateUserComponent } from './update-user/update-user.component';
+
+
+
+
+const accountModule = () => import('./account/account.module').then(x => x.AccountModule);
+const usersModule = () => import('./users/users.module').then(x => x.UsersModule);
+
+
+
 const routes: Routes = [
-  {path: '', redirectTo: '/DASHBOARD', pathMatch : 'full'
-  },
-  {path: 'DASHBOARD' , component : DashboardComponent ,
-    children : [
+      { path: '', component: HomeComponent, canActivate: [AuthGuard] },
+    { path: 'users', loadChildren: usersModule, canActivate: [AuthGuard] },
+    { path: 'account', loadChildren: accountModule },
+
+    // otherwise redirect to home
+    { path: 'DASHBOARD' , component : DashboardComponent ,canActivate:[AuthGuard],
+      children : [
       {path : 'bar-chart1' , component: Barchart1Component },
       {path : 'bar-chart2' , component: Barchart2Component },
       {path : 'bar-chart3' , component: Barchart3Component },
       {path : 'bar-chart4' , component: Barchart4Component }
-    ]
+      ]
+    }, {path: 'USER-PROFILE' , component : UserProfileComponent
   },
-  {path: 'USER-PROFILE' , component : UserProfileComponent
-  },
-  {path: 'CREATE-DEAL' , component : CreateDealComponent
-  },
-  {
-    path :'UPDATE-DEAL', component : UpdateDealComponent
+  {path: 'CREATE-DEAL' , component : CreateDealComponent,canActivate:[AuthGuard]
   },
   {
-    path :'VIEW-DEAL' , component : ViewDealComponent
+    path :'UPDATE-DEAL', component : UpdateDealComponent,canActivate:[AuthGuard]
   },
   {
-    path : 'CREATE-USER' , component : CreateUserComponent
+    path :'VIEW-DEAL' , component : ViewDealComponent,canActivate:[AuthGuard]
   },
   {
-    path : 'VIEW-USER' , component : ViewUserComponent
+    path : 'CREATE-USER' , component : CreateUserComponent,canActivate:[AuthGuard]
   },
   {
-    path : 'UPDATE-USER' , component : UpdateUserComponent
+    path : 'VIEW-USER' , component : ViewUserComponent,canActivate:[AuthGuard]
+  },
+  {
+    path : 'UPDATE-USER' , component : UpdateUserComponent,canActivate:[AuthGuard]
   }
+
 
 ];
 
@@ -54,3 +68,4 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
+

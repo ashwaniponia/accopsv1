@@ -2,13 +2,13 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const users = require('../models/viewusers');
-<<<<<<< HEAD
+const crusers = require('../models/createuser');
+const bcrypt = require('bcryptjs');
 const deals = require('../models/viewdeals');
-
-=======
+const adddeal = require('../models/adddeals');
 var bodyParser = require('body-parser');
 const upusers = require('../models/updateuser');
-
+const moment = require('moment');
 
   mongoose.connect('mongodb+srv://kb99:kb99@cluster0-rphf4.mongodb.net/accops?retryWrites=true&w=majority' , function(err){
     if(err)
@@ -19,7 +19,6 @@ const upusers = require('../models/updateuser');
       console.log("MongoClient Connected!!");
     }
   });
->>>>>>> ed4ec181742e102dfddf582a48573da48e4c09c4
 
 
 
@@ -100,20 +99,15 @@ router.get('/removeuser/delete/:id' , function(req , res){
 
 
 router.post('/adduser' , function(req , res){
-<<<<<<< HEAD
- 
-=======
 
  console.log(req.body);
 
->>>>>>> ed4ec181742e102dfddf582a48573da48e4c09c4
-  users.create(req.body,function(err,result){
+  crusers.create(req.body,function(err,result){
     if(err){
-      console.log("Error in Adding record");
-      res.status(400).send("unable to add to database")
+      console.log(err);
+      res.json("Error");
     }else{
-      console.log("Successful Addition Process");
-      res.status(200).json({'User':'User added Successful'})
+      res.json("User Created successfully");
     }
   });
 
@@ -123,7 +117,7 @@ router.post('/adduser' , function(req , res){
 
 
 router.post('/Dealexist',function(req,res){
-      
+
      deals.count({"orgname":req.body.orgname,"description":req.body.description,"amount":req.body.amount},function(err,count){
       console.log(count)
       if(err){
@@ -139,16 +133,88 @@ router.post('/Dealexist',function(req,res){
 
 router.post('/addDeal',function(req,res){
  console.log(req.body);
-      
-           deals.create(req.body,function(err,result){
+           var current_date = new Date();
+           var deal = {
+              dealprogress : req.body.dealprogress,
+              description : req.body.description,
+              orgname : req.body.orgname,
+              amount : req.body.amount,
+              level : req.body.level ,
+              Hide : req.body.Hide ,
+              issued_date :  current_date,
+              completion_time : req.body.Time,
+              username : req.body.username
+           };
+
+           console.log(deal);
+
+           adddeal.create(deal,function(err,result){
               if(err){
               console.log("Error in Adding record");
               res.status(400).send("unable to add to database")
            }else{
               console.log("Successful Addition Process");
               res.status(200).json({'Deal':'Deal added Successful'})
-            }      
+            }
            });
+});
+
+
+router.get('/viewdeals', function(req , res){
+  adddeal.find({}).exec(function(err , dealdata){
+      if(err)
+      console.log("Error");
+      else {
+        var current_date = new Date();
+        var end = moment(current_date , "DD.MM.YYYY");
+        var array = [];
+        for(var i =0 ; i < dealdata.length ; i++)
+        {
+          var start = moment(dealdata[i].issued_date , "DD.MM.YYYY");
+
+
+          var rem = moment.duration(end.diff(start));
+          var days_completed = rem.asDays();
+          var sub = 0;
+          var cmp = dealdata[i].completion_time;
+          var completed = 0;
+          if(days_completed < cmp)
+          {
+            completed = cmp;
+          }
+          else {
+            completed = days_completed;
+          }
+          if(cmp < days_completed)
+          {
+            sub = cmp;
+          }
+          else
+          {
+            sub = days_completed;
+          }
+          console.log(completed);
+          //console.log(days_remaining);
+          var days_remaining = dealdata[i].completion_time-sub;
+          console.log(days_remaining);
+          var x;
+          x = {
+            _id : dealdata[i]._id,
+            dealprogress : dealdata[i].dealprogress,
+            description : dealdata[i].description,
+            orgname : dealdata[i].orgname,
+            username : dealdata[i].username,
+            amount : dealdata[i].amount,
+            level : dealdata[i].level ,
+            Hide : dealdata[i].Hide ,
+            Time : [Math.round(days_remaining) , Math.round(sub)]
+          };
+          array.push(x);
+        }
+        console.log(array);
+        res.json(array);
+      }
+  });
 });
 
 

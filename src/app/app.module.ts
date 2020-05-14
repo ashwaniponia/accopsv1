@@ -24,7 +24,8 @@ import { CreateUserComponent } from './create-user/create-user.component';
 import { Filter1Pipe } from './filter1.pipe';
 import { Filter2Pipe } from './filter2.pipe';
 import { UserProfileComponent } from './user-profile/user-profile.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { JwtInterceptor, ErrorInterceptor, fakeBackendProvider } from './_helpers';
 
 @NgModule({
   declarations: [
@@ -58,7 +59,12 @@ import { HttpClientModule } from '@angular/common/http';
     HttpClientModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [{ provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+            { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    
+            // provider used to create fake backend
+            fakeBackendProvider],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+

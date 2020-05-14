@@ -66,26 +66,37 @@
     <input type = "text" class = "form-control" placeholder="Enter deal id to search" [(ngModel)] = "search_text">
   </div>
   <br>
+
+  <div>
+    <input type = "text" class = "form-control" placeholder="Enter username to search" [(ngModel)] = "search_user">
+  </div>
   <br>
-  
+
+  <div>
+    <input type = "text" class = "form-control" placeholder="Enter company to search" [(ngModel)] = "search_company">
+  </div>
+  <br>
+  <br>
+
   <table class = "table table-hover">
     <thead>
       <th scope="col"> DEALID </th>
       <th scope="col" style="text-align:center;"> DEAL PROGRESS </th>
       <th scope="col" style="text-align:center;"> TIMER </th>
       <th scope="col" > DESCRIPTION</th>
+      <th scope="col" > USERNAME</th>
     </thead>
 
     <tbody>
-      <tr *ngFor="let item of array | filter1 : search_text">
+      <tr *ngFor="let item of array | filter1 : search_text : search_user : search_company">
 
         <th scope="row" style="padding: 50px 0px 0px 0px ;">
-          {{item.dealId}}
+          {{item._id}}
         </th>
 
         <td>
           <div class="progress" style = "margin : 40px 40px 40px 40px;">
-            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{item.Progress}}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{item.Progress}}%</div>
+            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{item.dealprogress}}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{item.dealprogress}}%</div>
           </div>
         </td>
 
@@ -95,12 +106,12 @@
             <canvas baseChart
                 height ="100"
                 width="100"
-                [data]="item.pieChartData"
-                [labels]="item.pieChartLabels"
-                [chartType]="item.pieChartType"
-                [options]="item.pieChartOptions"
-                (chartHover)="item.chartHovered($event)"
-                (chartClick)="item.chartClicked($event)"
+                [data]="item.Time"
+                [labels]="pieChartLabels"
+                [chartType]="pieChartType"
+                [options]="pieChartOptions"
+                (chartHover)="chartHovered($event)"
+                (chartClick)="chartClicked($event)"
                     >
             </canvas>
           </div>
@@ -116,13 +127,16 @@
 
            <div [hidden]="item.Hide"  class="card card-body">
              <ul class="list-group">
-                 <li class="list-group-item"> About Deal : abcdefgh</li>
-                 <li class="list-group-item"> L1 Auth : Done </li>
-                 <li class="list-group-item"> L2 Auth : Done </li>
-                 <li class="list-group-item"> L3 Auth : Pending </li>
-                 <li class="list-group-item"> Organisation : Apple</li>
+                 <li class="list-group-item"> About Deal : {{item.description}}</li>
+                 <li class="list-group-item"> Level : {{item.level}} </li>
+                 <li class="list-group-item"> Organisation : {{item.orgname}}</li>
+                 <li class="list-group-item"> Amount : {{item.amount}}</li>
+
              </ul>
            </div>
+        </td>
+        <td style="padding : 50px 0px 0px 0px;">
+          <b>{{item.username}}</b>
         </td>
       </tr>
     </tbody>

@@ -1,8 +1,9 @@
 export class Deal {
- 
-    constructor( 
+
+    constructor(
         public description : string,
         public amount : number,
         public OrgName : string,
-        public level : number) {}
+        public level : number,
+        public time : number) {}
 }
