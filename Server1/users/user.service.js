@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const db = require('_helpers/db');
 const User = db.User;
+const Cruser = db.Cruser;
 
 module.exports = {
     authenticate,
@@ -34,20 +35,23 @@ async function getById(id) {
 
 async function create(userParam) {
     // validate
-    if (await User.findOne({ username: userParam.username })) {
+    if (await Cruser.findOne({ username: userParam.username })) {
         throw 'Username "' + userParam.username + '" is already taken';
     }
 
-    const user = new User(userParam);
+    const user = new Cruser(userParam);
 
     // hash password
     if (userParam.password) {
         user.hash = bcrypt.hashSync(userParam.password, 10);
     }
-    
+
+    console.log(user);
+
     console.log("User Created Successfully");
     // save user
-    await user.save();
+    //await user.save();
+    await Cruser.create(user);
 }
 
 async function update(id, userParam) {

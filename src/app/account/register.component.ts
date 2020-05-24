@@ -43,7 +43,36 @@ export class RegisterComponent implements OnInit {
         }
 
         this.loading = true;
-        this.accountService.register(this.form.value)
+
+        var ans = {
+          company :"",
+          imge : "assets/img/images.jpg",
+          orgcode : "",
+          username : this.form.controls.username.value,
+          firstname : this.form.controls.firstName.value ,
+          lastname : this.form.controls.lastName.value,
+          password : this.form.controls.password.value,
+          address : "",
+          city : "",
+          country :"",
+          postalcode : 0,
+          urights : [],
+          drights : [],
+          L1 : [],
+          L2 : [],
+          L3 : [],
+          regioncode :[],
+          Hide : true ,
+          Hide1 : false,
+          maxval : 0,
+          totaldeals :0,
+          acceptedeals: 0,
+          rejecteddeals : 0,
+          dealspending:0
+
+        }
+
+        this.accountService.register(ans)
             .pipe(first())
             .subscribe(
                 data => {

@@ -26,6 +26,7 @@ import { Filter2Pipe } from './filter2.pipe';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { JwtInterceptor, ErrorInterceptor, fakeBackendProvider } from './_helpers';
+import { NotificationsComponent } from './notifications/notifications.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import { JwtInterceptor, ErrorInterceptor, fakeBackendProvider } from './_helper
     CreateUserComponent,
     Filter1Pipe,
     Filter2Pipe,
-    UserProfileComponent
+    UserProfileComponent,
+    NotificationsComponent
   ],
   imports: [
     AlertModule.forRoot(),

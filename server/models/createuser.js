@@ -7,6 +7,7 @@ const UserSchema = new Schema({
 
     username : String,
     imge : String ,
+    hash : String ,
     company : String,
     address : String,
     city : String,
@@ -26,6 +27,10 @@ const UserSchema = new Schema({
 
     Hide1 : Boolean,
     urights : [{type : String}],
-    drights : [{type : String}]
+    drights : [{type : String}],
+    L1 : [{type : String}],
+    L2 : [{type : String}],
+    L3 : [{type : String}],
+    regioncode : [{type : String}]
 });
 module.exports = mongoose.model('cruser' , UserSchema , 'users');

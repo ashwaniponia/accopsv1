@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const UserSchema = new Schema({  
- 
+const UserSchema = new Schema({
+
     username : String,
     imge : String ,
     company : String,
@@ -18,9 +18,9 @@ const UserSchema = new Schema({
     totaldeals : Number,
     acceptedeals : Number,
     rejecteddeals : Number,
-    
+
     dealspending : Number,
-    
+
     maxval : Number,
     Hide : Boolean,
 

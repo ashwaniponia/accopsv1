@@ -15,7 +15,7 @@ import { ViewDealComponent } from './view-deal/view-deal.component';
 import { CreateUserComponent } from './create-user/create-user.component';
 import { ViewUserComponent } from './view-user/view-user.component';
 import { UpdateUserComponent } from './update-user/update-user.component';
-
+import { NotificationsComponent } from './notifications/notifications.component';
 
 
 
@@ -23,7 +23,10 @@ const accountModule = () => import('./account/account.module').then(x => x.Accou
 
 
 const routes: Routes = [
-    { path: '', component: HomeComponent, canActivate: [AuthGuard] },
+
+
+  //{path: '', redirectTo: '/DASHBOARD', pathMatch : 'full'
+  //},
     { path: 'account', loadChildren: accountModule },
 
     // otherwise redirect to home
@@ -52,9 +55,10 @@ const routes: Routes = [
   },
   {
     path : 'UPDATE-USER' , component : UpdateUserComponent,canActivate:[AuthGuard]
+  },
+  {
+    path : 'NOTIFICATION' , component : NotificationsComponent , canActivate: [AuthGuard]
   }
-
-
 ];
 
 @NgModule({
@@ -65,4 +69,3 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
-
