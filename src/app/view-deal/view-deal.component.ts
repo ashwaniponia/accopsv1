@@ -37,6 +37,8 @@ export class ViewDealComponent implements OnInit {
   constructor(private _dealservice: DealService) { }
 
   ngOnInit(): void {
-    this._dealservice.getDeals().subscribe(data => this.array = data);
+    this._dealservice.getDeals().subscribe(data => {this.array = data
+      console.log(data);
+    });
   }
 }

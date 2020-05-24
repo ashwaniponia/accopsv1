@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { User } from '../user';
+import { UserServiceService } from '../user-service.service';
+import { GlobalConstants } from '../common/global-constants';
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
@@ -8,10 +10,10 @@ import { User } from '../user';
 export class UserProfileComponent implements OnInit {
 
 
-  userModel = new User('Accops' , 'A1234' , 'contender' , 'Karandeep' , 'Bajwa' , '501 Rose building Regency Meadows Dhanori Pune ' , 'Pune' , 'India' , 411015);
-  constructor() { }
+  public userModel;
+  constructor(private _userservice : UserServiceService) { }
 
   ngOnInit(): void {
-  }
-
+    this.userModel = GlobalConstants.info;
+}
 }

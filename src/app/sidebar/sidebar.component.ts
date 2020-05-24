@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-
+import { GlobalConstants } from '../common/global-constants';
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent  {
- 
+
  public PermanentRights ;
  public EditUserFlag ;
  public DealRightsFlag ;
@@ -16,14 +16,14 @@ export class SidebarComponent  {
 
 
   constructor() {
-     
-  this.PermanentRights =['DASHBOARD' , 'USER-PROFILE']
+
+  this.PermanentRights =['DASHBOARD' , 'USER-PROFILE' , 'NOTIFICATION']
 
   this.EditUserFlag = true
   this.DealRightsFlag = true
 
-  this.DealRights = ['VIEW-DEAL','CREATE-DEAL','UPDATE-DEAL']
-  this.UserRights = ['VIEW-USER','CREATE-USER','UPDATE-USER']
+  this.DealRights = GlobalConstants.info.drights;
+  this.UserRights = GlobalConstants.info.urights;
 
 
   }

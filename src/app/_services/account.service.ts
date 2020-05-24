@@ -3,10 +3,11 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { GlobalConstants  } from '../common/global-constants';
 
 import { environment } from '@environments/environment';
 import { User } from '@app/_models';
-
+import { User1 } from '../_models/user1';
 @Injectable({ providedIn: 'root' })
 export class AccountService {
     private userSubject: BehaviorSubject<User>;
@@ -28,6 +29,9 @@ export class AccountService {
         return this.http.post<User>(`${environment.apiUrl}/users/authenticate`, { username, password })
             .pipe(map(user => {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
+                GlobalConstants.info = user;
+                console.log(user);
+                console.log(GlobalConstants.info);
                 localStorage.setItem('user', JSON.stringify(user));
                 this.userSubject.next(user);
                 return user;
@@ -41,7 +45,7 @@ export class AccountService {
         this.router.navigate(['/account/login']);
     }
 
-    register(user: User) {
+    register(user: User1) {
         return this.http.post(`${environment.apiUrl}/users/register`, user);
     }
 

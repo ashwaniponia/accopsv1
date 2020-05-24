@@ -1,55 +1,194 @@
 <div class="container">
-    <div class="row">
-        <div class="w3-bar-item w3-button w3-pink w3-left ">
-            <b>APPROVE DEALS</b>
-        </div>
-    </div>
 
-    <div class="container">
-        <div [hidden]="submitted">
-          <form (ngSubmit)="onSubmit()" #dealForm="ngForm">
-           <p>
-            <b>DEAL  ID:</b> 123 <br>
-            <b>DEAL  DESCRIPTION :</b> This is  a Sample Deal<br>
-            <b>DATE:</b> 12-03-2020 <br>
-            <b>ORGANISATION :</b> XYZ <br>
-            <b>AMOUNT:</b> 123 <br>
-            <b>SUBMITTED BY:</b> ABS <br>
-           </p>
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="levelCheck1">
-                <label class="form-check-label" for="exampleCheck1">Level 1</label>
-            </div>
-          
-            <div class="form-group">
-              <label for="description">Description</label>
-              <input type="text" class="form-control" id="description" >
-            </div> 
-            
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="levelCheck2">
-                <label class="form-check-label" for="exampleCheck1">Level 2</label>
-            </div>
-          
-            <div class="form-group">
-              <label for="description">Description</label>
-              <input type="text" class="form-control" id="description">
-            </div>
-            
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="levelCheck3">
-                <label class="form-check-label" for="exampleCheck1">Level 3</label>
-            </div>
-          
-            <div class="form-group">
-              <label for="description">Description</label>
-              <input type="text" class="form-control" id="description">
-            </div>        
-         
-      
-            <button type="submit" class="btn btn-success" [disabled]="!dealForm.form.valid">Submit</button>
-          </form>
-        </div>
-      
+  <div class="row">
+      <div class="w3-bar-item w3-button w3-pink w3-left ">
+          <b>View Deal</b>
       </div>
-</div>
+  </div>
+
+  <!--<div class = "row">
+    <div class = "col-md-auto" id = "head1">
+        <b>DEAL ID</b>
+    </div>
+    <div class = "col" id = "head2">
+        <b>PROGRESS BAR </b>
+    </div>
+    <div class = "col" id = "head3">
+        <b>TIMER</b>
+    </div>
+  </div>-->
+  <br>
+  <br>
+  <!--<div class="row" *ngFor="let item of array;">
+    <div class="col-md-1" id = "col1">
+       <b><font size="5">{{item.dealId}}</font></b>
+    </div>
+    <div class="col-md-4" id="col2">
+      <div class="progress" style = "margin : 40px 40px 40px 40px;">
+        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{item.Progress}}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{item.Progress}}%</div>
+      </div>
+    </div>
+    <div class="col-md-5" id = "col3">
+
+      <div style="display: block">
+        <canvas baseChart
+            [data]="item.pieChartData"
+            [labels]="item.pieChartLabels"
+            [chartType]="item.pieChartType"
+            [options]="item.pieChartOptions"
+            (chartHover)="item.chartHovered($event)"
+            (chartClick)="item.chartClicked($event)"
+                >
+        </canvas>
+    </div>
+   </div>
+   <div class = "col" id = "col4">
+     <p>
+       <button  (click)="item.Hide = !item.Hide" class="btn btn-primary" type="button">
+         Deal Description
+       </button>
+     </p>
+
+      <div [hidden]="item.Hide"  class="card card-body">
+        <ul class="list-group">
+            <li class="list-group-item"> About Deal : abcdefgh</li>
+            <li class="list-group-item"> L1 Auth : Done </li>
+            <li class="list-group-item"> L2 Auth : Done </li>
+            <li class="list-group-item"> L3 Auth : Pending </li>
+            <li class="list-group-item"> Organisation : Apple</li>
+        </ul>
+      </div>
+   </div>
+  </div>-->
+
+
+  <div>
+    <input type = "text" class = "form-control" placeholder="Enter deal id to search" [(ngModel)] = "search_text">
+  </div>
+  <br>
+
+  <div>
+    <input type = "text" class = "form-control" placeholder="Enter username to search" [(ngModel)] = "search_user">
+  </div>
+  <br>
+
+  <div>
+    <input type = "text" class = "form-control" placeholder="Enter company to search" [(ngModel)] = "search_company">
+  </div>
+  <br>
+  <br>
+
+
+
+  <div class = "row">
+      <div class="col">
+          <button class = "btn btn-success" (click)="load1()" *ngIf="l1.length > 0"> Load L1 Entries </button>
+      </div>
+
+      <div class = "col">
+            <button class = "btn btn-success" (click)="load2()" *ngIf="l2.length > 0"> Load L2 Entries </button>
+      </div>
+
+      <div class = "col">
+          <button class = "btn btn-success" (click)="load3()" *ngIf="l3.length > 0"> Load L3 Entries </button>
+      </div>
+  </div>
+  <br>
+  <br>
+  <table class = "table table-hover">
+    <thead>
+      <th scope="col"> DEALID </th>
+      <th scope="col" style="text-align:center;"> DEAL PROGRESS </th>
+      <th scope="col" style="text-align:center;"> TIMER </th>
+      <th scope="col" > DESCRIPTION</th>
+      <th scope="col" > USERNAME</th>
+      <th scope="col" >   AUTHORIZATION </th>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let item of array | filter1 : search_text : search_user : search_company" [hidden]="item.Hide">
+        <th scope="row" style="padding: 50px 0px 0px 0px ;">
+          {{item._id}}
+        </th>
+
+        <td>
+          <div class="progress" style = "margin : 40px 40px 40px 40px;">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{item.dealprogress}}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{item.dealprogress}}%</div>
+          </div>
+        </td>
+
+        <td>
+          <div class="container" style = "height:200px; width:200px;">
+          <div style="display: block">
+            <canvas baseChart
+                height ="100"
+                width="100"
+                [data]="item.Time"
+                [labels]="pieChartLabels"
+                [chartType]="pieChartType"
+                [options]="pieChartOptions"
+                (chartHover)="chartHovered($event)"
+                (chartClick)="chartClicked($event)"
+                    >
+            </canvas>
+          </div>
+          </div>
+        </td>
+
+        <td style="padding : 50px 0px 0px 0px;">
+          <p>
+            <button  (click)="item.Hide_description = !item.Hide_description" class="btn btn-primary" type="button">
+              Deal Description
+            </button>
+          </p>
+
+           <div [hidden]="item.Hide_description"  class="card card-body">
+             <ul class="list-group">
+                 <li class="list-group-item"> About Deal : {{item.description}}</li>
+                 <li class="list-group-item"> Level : {{item.level}} </li>
+                 <li class="list-group-item"> Organisation : {{item.orgname}}</li>
+                 <li class="list-group-item"> Amount : {{item.amount}}</li>
+                 <li class= "list-group-item"> Region Code : {{item.region_code}}</li>
+             </ul>
+           </div>
+        </td>
+        <td style="padding : 50px 0px 0px 0px;">
+          <b>{{item.username}}</b>
+        </td>
+
+        <td *ngIf="item.status == 'Pending'">
+          <span class="badge badge-warning">Pending</span>
+        </td>
+        <td *ngIf="item.status == 'Authorised'">
+          <span class="badge badge-success">Authorised </span>
+        </td>
+        <td *ngIf="item.status == 'Rejected'">
+          <span class="badge badge-success">Rejected</span>
+        </td>
+
+        <td *ngIf = "item.level==1">
+          <button (click) = "func1(item)" class = "btn btn-success" type="button">
+            Authorize Deal
+          </button>
+        </td>
+
+        <td *ngIf = "item.level==2">
+          <button (click) = "func2(item)" class = "btn btn-success" type="button">
+            Authorize Deal
+          </button>
+          <br>
+          <br>
+          <button (click) = "func3(item)" class = "btn btn-success" type="button">
+            Shift To L3
+          </button>
+        </td>
+
+        <td *ngIf = "item.level==3">
+          <button (click) = "func4(item)" class = "btn btn-success" type="button">
+            Authorize Deal
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+ </div>

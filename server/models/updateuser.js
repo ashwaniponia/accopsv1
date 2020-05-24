@@ -16,6 +16,10 @@ const UserSchema = new Schema({
     orgcode : String,
     postalcode : Number,
     urights : [{type : String}],
-    drights : [{type : String}]
+    drights : [{type : String}],
+    L1 : [{type : String}],
+    L2 : [{type : String}],
+    L3 : [{type : String}],
+    regioncode : [{type : String}]
 });
 module.exports = mongoose.model('upuser' , UserSchema , 'users');

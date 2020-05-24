@@ -11,7 +11,8 @@ const DealSchema = new Schema({
     orgname: String,
     amount :Number,
     level : Number,
-    Hide : Boolean
+    Hide : Boolean,
+    region_code : String
 });
 
 

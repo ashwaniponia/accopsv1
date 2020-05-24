@@ -1,6 +1,7 @@
 export interface User1{
     username : string,
     imge : string ,
+    password : string,
     company : string,
     address : string,
     city : string,
@@ -13,11 +14,11 @@ export interface User1{
     totaldeals : number,
     acceptedeals : number,
     rejecteddeals : number,
-    
+
     dealspending : number,
-    
+
     maxval : number,
     Hide : boolean,
 
-    Hide1 : boolean
+    Hide1 : boolean,
 }

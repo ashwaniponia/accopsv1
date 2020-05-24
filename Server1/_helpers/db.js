@@ -11,5 +11,6 @@ db.once('open', function() {
 });
 
 module.exports = {
-    User: require('../users/user.model')
+    User: require('../users/user.model'),
+    Cruser : require('../users/create-user.model')
 };

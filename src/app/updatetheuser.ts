@@ -10,5 +10,9 @@ export interface Updatetheuser{
     firstname : string,
     lastname : string,
     orgcode : string,
-    postalcode : number
+    postalcode : number,
+    L1 : string[],
+    L2 : string[],
+    L3 : string[],
+    regioncode : string[]
 }

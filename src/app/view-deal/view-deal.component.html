@@ -120,23 +120,33 @@
 
         <td style="padding : 50px 0px 0px 0px;">
           <p>
-            <button  (click)="item.Hide = !item.Hide" class="btn btn-primary" type="button">
+            <button  (click)="item.Hide_description = !item.Hide_description" class="btn btn-primary" type="button">
               Deal Description
             </button>
           </p>
 
-           <div [hidden]="item.Hide"  class="card card-body">
+           <div [hidden]="item.Hide_description"  class="card card-body">
              <ul class="list-group">
                  <li class="list-group-item"> About Deal : {{item.description}}</li>
                  <li class="list-group-item"> Level : {{item.level}} </li>
                  <li class="list-group-item"> Organisation : {{item.orgname}}</li>
                  <li class="list-group-item"> Amount : {{item.amount}}</li>
-
+                 <li class= "list-group-item"> Region Code : {{item.region_code}}</li>
              </ul>
            </div>
         </td>
         <td style="padding : 50px 0px 0px 0px;">
           <b>{{item.username}}</b>
+        </td>
+
+        <td *ngIf="item.status == 'Pending'">
+          <span class="badge badge-warning">Pending</span>
+        </td>
+        <td *ngIf="item.status == 'Authorised'">
+          <span class="badge badge-success">Authorised </span>
+        </td>
+        <td *ngIf="item.status == 'Rejected'">
+          <span class="badge badge-success">Rejected</span>
         </td>
       </tr>
     </tbody>

@@ -5,5 +5,6 @@ export class Deal {
         public amount : number,
         public OrgName : string,
         public level : number,
-        public time : number) {}
+        public time : number,
+        public regioncode : string ) {}
 }

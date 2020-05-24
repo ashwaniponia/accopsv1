@@ -4,7 +4,7 @@
       <input type = "text" class = "form-control" placeholder="Enter the user name "  [(ngModel)]="searchString">
     </div>
     <div class = "col-xl">
-      <button type = "submit" class= "btn btn-primary" (click) = "func1()">Submit</button>
+      <button type = "submit" class= "btn btn-primary" (click) = "func1()">Search for the user</button>
     </div>
   </div>
 
@@ -44,6 +44,42 @@
         <small class="text-danger" *ngIf="UserForm.controls.lastname.touched && UserForm.controls.lastname.errors?.required">Lastname  field required </small>
 
       </div>
+
+      <div class = "form-group">
+        <button class="btn btn-primary" (click)="addRegion()"> Add Another Field </button>
+        <br>
+        <label for = "REGION"> Add Region </label>
+        <br>
+        <br>
+        <div formArrayName="Region_selection" *ngFor="let regc of UserForm.controls.Region_selection.controls; let i = index;">
+            <div [formGroupName]="i">
+              <input type = "text" formControlName="region_code" class="form-control" [class.is-invalid]="UserForm.controls.Region_selection.controls[i].touched && UserForm.controls.Region_selection.controls[i].invalid" required>
+
+                  <div class="custom-control custom-radio" *ngIf="UserForm.controls.urights.controls[2].value">
+                    <input type="radio" id="customRadio1{{i}}"  value="L1"  class="custom-control-input" formControlName="auth_level" >
+                    <label class="custom-control-label" for="customRadio1{{i}}">L1</label>
+                  </div>
+                  <div class="custom-control custom-radio" *ngIf="UserForm.controls.urights.controls[2].value">
+                    <input type="radio" id="customRadio2{{i}}"  value="L2" class="custom-control-input" formControlName="auth_level">
+                    <label class="custom-control-label" for="customRadio2{{i}}">L2</label>
+                  </div>
+                  <div class="custom-control custom-radio" *ngIf="UserForm.controls.urights.controls[2].value">
+                    <input type="radio" id="customRadio3{{i}}"  value= "L3" class="custom-control-input" formControlName="auth_level">
+                    <label class="custom-control-label" for="customRadio3{{i}}">L3</label>
+                  </div>
+              </div>
+              <br>
+
+              <small class="text-danger" *ngIf="UserForm.controls.Region_selection.controls[i].touched && (UserForm.controls.Region_selection.controls[i].errors?.required || check(UserForm.controls.Region_selection.controls[i].value.auth_level , UserForm.controls.Region_selection.controls[i].value.region_code) )"> Enter a valid region code  </small>
+              <br>
+
+              <button *ngIf="UserForm.controls.Region_selection.length > 1" class="btn btn-danger" (click)="RemoveRegion(i)"> Remove Field </button>
+              <br>
+              <br>
+            </div>
+        </div>
+
+
 
 
       <div class = "form-group">
@@ -101,13 +137,8 @@
   </div>
 
   <div class="row" [hidden]="hidemsg">
-    <b>Form Updated Successfully </b>
+    <b>{{message}} </b>
   </div>
-  <div class = "row" [hidden] = "hidemsg1">
-    <b>The user is not present in the database </b>
-  </div>
-  <div class = "row" [hidden] = "hidemsg2">
-    <b>Error in updation ! Value not updated </b>
-  </div>
+
 
 </div>

@@ -15,17 +15,17 @@ export class ViewUserComponent implements OnInit {
   public search_name="";
   public search_company="";
   public array = [];
-  
+
   constructor(private _userservice : UserServiceService) { }
 
   ngOnInit(): void {
     this._userservice.getUsers().subscribe(resUserData => this.array = resUserData);
   }
-  
+
   deleteUser(item) : void {
    //console.log(id)
      item.Hide1 = true;
-     this._userservice.removeUser(item._id).subscribe(TempData => { 
+     this._userservice.removeUser(item._id).subscribe(TempData => {
       console.log('Success')
     },
     error =>console.log(error),() =>{
