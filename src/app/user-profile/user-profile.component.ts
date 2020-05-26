@@ -9,11 +9,13 @@ import { GlobalConstants } from '../common/global-constants';
 })
 export class UserProfileComponent implements OnInit {
 
-
+  public url = "assets/img/images.jpg";
   public userModel;
   constructor(private _userservice : UserServiceService) { }
 
   ngOnInit(): void {
     this.userModel = GlobalConstants.info;
+    if(this.userModel.imge != null)
+    this.url = "http://localhost:4000/uploads/" + this.userModel.imge;
 }
 }

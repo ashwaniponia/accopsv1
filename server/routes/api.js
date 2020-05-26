@@ -10,7 +10,25 @@ var bodyParser = require('body-parser');
 const upusers = require('../models/updateuser');
 const  notification = require('../models/notification');
 const moment = require('moment');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const storage = multer.diskStorage({
+  destination : function(req , file , cb)
+  {
+    cb(null, './uploads/');
+  },
+  filename : function(req , file , cb){
 
+      if(file == null)
+      {
+        next();
+      }
+      cb(null , file.originalname);
+  }
+
+});
+const upload = multer({storage : storage});
 var flag = 0;
   mongoose.connect('mongodb+srv://kb99:kb99@cluster0-rphf4.mongodb.net/accopsv?retryWrites=true&w=majority' , function(err){
     if(err)
@@ -32,6 +50,7 @@ router.get('/viewusers' , function(req , res){
       res.json("Error");
     }
     else {
+      console.log(viewusers);
       res.json(viewusers);
     }
   });
@@ -73,15 +92,18 @@ try
 {
     var compute = async function(arr)
     {
+        console.log("Look Here");
+        console.log(arr._id);
         const session = await mongoose.startSession();
         session.startTransaction();
         try
         {
-          console.log(arr);
-          var check1 = await upusers.findOneAndUpdate({ _id : arr._id} , {
+          var check1 = null;
+          if(arr.imge == null)
+          {
+           check1 = await upusers.findOneAndUpdate({ _id : arr._id} , {
             $set : {
               username : arr.username,
-              imge : arr.imge,
               company :arr.company,
               address :arr.address,
               city : arr.city,
@@ -99,6 +121,30 @@ try
 
             }
           } , session );
+        }
+        else {
+          check1 = await upusers.findOneAndUpdate({ _id : arr._id} , {
+           $set : {
+             username : arr.username,
+             company :arr.company,
+             imge : arr.imge,
+             address :arr.address,
+             city : arr.city,
+             country : arr.country,
+             firstname :arr.firstname,
+             lastname :arr.lastname,
+             orgcode :arr.orgcode,
+             postalcode :arr.postalcode,
+             urights :arr.urights,
+             drights :arr.drights,
+             L1 : arr.L1,
+             L2 : arr.L2,
+             L3 : arr.L3,
+             regioncode : arr.regioncode,
+
+           }
+         } , session );
+        }
           if(check1 == null)
           throw new Error("UpdateError");
 
@@ -130,15 +176,23 @@ catch(e)
 
 
 
-router.post('/updateuser/post' , async function(req , res){
-    session = await mongoose.startSession();
-    session.startTransaction();
-    console.log(req.body.form);
 
-    var l1 = req.body.form.L1;
-    var l2 = req.body.form.L2;
-    var l3 = req.body.form.L3;
-    var regioncode = req.body.form.regioncode;
+
+
+
+
+
+router.post('/updateuser/post' , upload.single('imge') , async function(req , res){
+  session = await mongoose.startSession();
+    session.startTransaction();
+
+
+    console.log(req.body);
+
+    var l1 = JSON.parse(req.body.L1);
+    var l2 = JSON.parse(req.body.L2);
+    var l3 = JSON.parse(req.body.L3);
+    var regioncode = JSON.parse(req.body.regioncode);
     l1.sort();
     l2.sort();
     l3.sort();
@@ -214,8 +268,53 @@ router.post('/updateuser/post' , async function(req , res){
 
       if(final_check == 0)
       {
-          await compute(array);
+        if(req.body.imge == "null" || req.body.imge == "undefined")
+        {
+          var array = {
+          _id : req.body._id,
+          username : req.body.username,
+          imge : null,
+          company :req.body.company,
+          country : req.body.country,
+          address :req.body.address,
+          city :req.body.city,
+          firstname : req.body.firstname,
+          lastname :req.body.lastname,
+          orgcode :req.body.orgcode,
+          postalcode :parseInt(req.body.postalcode),
+          urights :JSON.parse(req.body.urights),
+          drights :JSON.parse(req.body.drights),
+          L1 : JSON.parse(req.body.L1),
+          L2 : JSON.parse(req.body.L2),
+          L3 : JSON.parse(req.body.L3),
+          regioncode : JSON.parse(req.body.regioncode),
+        }
+      }
+        else
+        {
+          var array = {
+          _id : req.body._id,
+          username : req.body.username,
+          imge : req.file.originalname,
+          company :req.body.company,
+          address :req.body.address,
+          city :req.body.city,
+          country : req.body.country,
+          firstname : req.body.firstname,
+          lastname :req.body.lastname,
+          orgcode :req.body.orgcode,
+          postalcode :parseInt(req.body.postalcode),
+          urights :JSON.parse(req.body.urights),
+          drights :JSON.parse(req.body.drights),
+          L1 : JSON.parse(req.body.L1),
+          L2 : JSON.parse(req.body.L2),
+          L3 : JSON.parse(req.body.L3),
+          regioncode : JSON.parse(req.body.regioncode),
+        };
+       }
 
+        console.log(array);
+        await compute(array);
         /*  upusers.findOneAndUpdate({ _id : arr._id} , {
             $set : {
               username : arr.username,
@@ -311,13 +410,15 @@ var duplicatesExist = function(l)
 
 
 
-router.post('/adduser' , function(req , res){
+router.post('/adduser' ,  upload.single('imge') , function(req , res){
 
+console.log(req.file);
+ //console.log(req.file);
  console.log(req.body);
-  var l1 = req.body.L1;
-  var l2 = req.body.L2;
-  var l3 = req.body.L3;
-  var regioncode = req.body.regioncode;
+  var l1 = JSON.parse(req.body.L1);
+  var l2 = JSON.parse(req.body.L2);
+  var l3 = JSON.parse(req.body.L3);
+  var regioncode = JSON.parse(req.body.regioncode);
   l1.sort();
   l2.sort();
   l3.sort();
@@ -390,7 +491,7 @@ router.post('/adduser' , function(req , res){
   var hash = bcrypt.hashSync(req.body.password, 10);
   var ans = {
     username : req.body.username,
-    imge : req.body.imge ,
+    imge : req.file.originalname ,
     hash : hash ,
     company : req.body.company,
     address : req.body.address,
@@ -399,26 +500,26 @@ router.post('/adduser' , function(req , res){
     firstname : req.body.firstname,
     lastname : req.body.lastname,
     orgcode : req.body.orgcode,
-    postalcode : req.body.postalcode,
-    totaldeals : req.body.totaldeals,
-    acceptedeals : req.body.acceptedeals,
-    rejecteddeals : req.body.rejecteddeals,
+    postalcode : parseInt(req.body.postalcode),
+    totaldeals : 0,
+    acceptedeals : 0,
+    rejecteddeals : 0,
 
-    dealspending : req.body.dealspending,
+    dealspending : 0,
 
-    maxval : req.body.maxval,
-    Hide : req.body.Hide,
+    maxval :0,
+    Hide : true,
 
-    Hide1 : req.body.Hide1,
-    urights : req.body.urights,
-    drights : req.body.drights,
-    L1 : req.body.L1,
-    L2 :req.body.L2,
-    L3 : req.body.L3,
-    regioncode : req.body.regioncode
+    Hide1 : false,
+    urights : JSON.parse(req.body.urights),
+    drights : JSON.parse(req.body.drights),
+    L1 : JSON.parse(req.body.L1),
+    L2 :JSON.parse(req.body.L2),
+    L3 : JSON.parse(req.body.L3),
+    regioncode : JSON.parse(req.body.regioncode)
   };
 
-
+  console.log(ans);
 
   if(final_check == 0)
   {

@@ -12,14 +12,19 @@ export class UserServiceService {
   private _addApi = "http://localhost:4000/api/adduser";
   private _getUserUrl = "http://localhost:4000/api/updateuser/get";
   private _post = "http://localhost:4000/api/updateuser/post";
-
+  private getImg = "http://localhost:4000/uploads";
   constructor(private _http:HttpClient
   ) { }
 
 
-  postUser(ans : Updatetheuser) : Observable<any>
+  postUser(ans : FormData) : Observable<any>
   {
-    return this._http.post(this._post , {'form' : ans});
+    return this._http.post(this._post ,ans);
+  }
+
+  getImage(imge) : Observable<any>
+  {
+    return this._http.post(this.getImg , imge);
   }
 
   getUsers() : Observable<User1[]>
@@ -40,13 +45,16 @@ export class UserServiceService {
    return this._http.get(`${this._remApi}/delete/${id}`);
   }
 
-  addUser(ans): Observable<any>{
+  addUser(ans : FormData): Observable<any>{
+    ans.append('totaldeals', '0');
+    ans.append('accepteddeals', '0');
+    ans.append('rejecteddeals', '0');
+    ans.append('dealspending', '0');
+    ans.append('maxval', '0');
+    ans.append('Hide', 'true');
+    ans.append('Hide1', 'false');
+    console.log(ans);
 
-    let totaldeals =0,acceptedeals=0,rejecteddeals=0,dealspending=0,maxval=1000,Hide=true,Hide1=false , username = ans.username , imge = ans.imge, company = ans.company ,address = ans.address, city = ans.city,country = ans.country,firstname = ans.firstname,lastname = ans.lastname,orgcode = ans.orgcode,postalcode = ans.postalcode , urights = ans.urights , drights = ans.drights , L1 = ans.L1 , L2 = ans.L2 , L3 = ans.L3 , regioncode = ans.regioncode , password = ans.password;
-
-    const obj ={
-       username ,imge, company ,address,city,country,firstname,lastname,orgcode,postalcode,totaldeals,acceptedeals,rejecteddeals,dealspending,maxval,Hide,Hide1 , urights , drights , L1 , L2 , L3 , regioncode , password
-    };
-    return this._http.post(`${this._addApi}`,obj)
+    return this._http.post(`${this._addApi}`,ans);
   }
 }

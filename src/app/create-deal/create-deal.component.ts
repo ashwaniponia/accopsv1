@@ -6,32 +6,37 @@ import {Deal} from '../deal'
 import { promise } from 'protractor';
 import { resolve } from 'dns';
 import { GlobalConstants } from '../common/global-constants';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-create-deal',
   templateUrl: './create-deal.component.html',
   styleUrls: ['./create-deal.component.css']
 })
 export class CreateDealComponent implements OnInit {
-
-  public exist ;
-  constructor(private _dealservice:DealService) { }
+  constructor(private _dealservice:DealService , private router : Router) { }
   DummyDeal = new Deal("" , 0 , "" , 0 , 0 , "");
-  public submitted = false;
   public RegionCode = GlobalConstants.info.regioncode;
-  public hide = true;
   public message;
   ngOnInit(): void {
   }
 
-  createDeal(){
-    this.submitted = true;
-    console.log(this.DummyDeal);
-     this._dealservice.addDeal(this.DummyDeal.OrgName,this.DummyDeal.amount,this.DummyDeal.description , this.DummyDeal.time , this.DummyDeal.regioncode).subscribe(params =>{
-       this.hide = false;
-       this.message = params;
-     },error =>this.message=error,() =>{
-      console.log('UserApiService : Create User completed')
-    });
-  }
+  createDeal(dealForm){
 
+    if(dealForm.errors)
+    {
+        alert("Filling out all details is mandatory");
+    }
+    else
+    {
+         dealForm.resetForm();
+         this._dealservice.addDeal(this.DummyDeal.OrgName,this.DummyDeal.amount,this.DummyDeal.description , this.DummyDeal.time , this.DummyDeal.regioncode).subscribe(params =>{
+           this.message = params;
+           alert(this.message);
+
+         },error =>this.message=error,() =>{
+           alert("Error in Submission");
+           this.router.navigateByUrl('/CREATE-DEAL');
+        });
+    }
+  }
 }

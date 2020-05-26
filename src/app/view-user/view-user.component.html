@@ -84,7 +84,7 @@
       <th scope="col" style = "padding-left : 40px" > COMPANY  </th>
       <th scope="col" style = "text-align : center;"> PHOTO </th>
       <th scope="col" style = "padding-left : 60px;"> DESCRIPTION </th>
-      <th scope="col" style = "padding-right : 20px;"> REMOVE </th>
+      <th scope="col" style = "padding-right : 20px;" *ngIf = "drights.includes('DELETE');"> REMOVE </th>
     </thead>
 
     <tbody>
@@ -102,7 +102,7 @@
         </td>
         <td  style="padding: 30px 0px 0px 0px ;">
           <div class="container" style = "height:100px; width:100px;">
-            <img src="{{item.imge}}" class="img-fluid" alt="Responsive image">
+            <img src={{item.imge}} class="img-fluid" alt="Responsive image">
           </div>
         </td>
         <td style="padding : 50px 0px 0px 50px;">
@@ -115,7 +115,7 @@
            <div [hidden]="item.Hide"  class="card card-body">
              <ul class="list-group">
                  <li class ="list-group-item"> Total Deals : {{item.totaldeals}}</li>
-                 <li class ="list-group-item"> Deals Accepted : {{item.accepteddeals}} </li>
+                 <li class ="list-group-item"> Deals Accepted : {{item.acceptedeals}} </li>
                  <li class="list-group-item"> Deals Rejected : {{item.rejecteddeals}} </li>
                  <li class="list-group-item"> Deals Pending : {{item.dealspending}} </li>
                  <li class="list-group-item"> Maximum Deal package obtained : {{item.maxval}}</li>
@@ -123,7 +123,7 @@
            </div>
         </td>
 
-        <td style="padding: 50px 0px 0px 0px ;">
+        <td style="padding: 50px 0px 0px 0px ;" *ngIf = "drights.includes('DELETE');">
             <button (click)="deleteUser(item)" class="btn btn-danger" type="button">
               Remove
             </button>

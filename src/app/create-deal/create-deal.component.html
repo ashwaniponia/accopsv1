@@ -6,7 +6,7 @@
     </div>
 
     <div class="container">
-        <div [hidden]="submitted">
+        <div>
           <form  #dealForm="ngForm">
 
             <div class="form-group">
@@ -60,11 +60,11 @@
             </div>
 
 
-            <button type="submit" (click)="createDeal()" class="btn btn-success" [disabled]="!dealForm.form.valid">Submit</button>
+            <button type="submit" (click)="createDeal(dealForm)" class="btn btn-success">Submit</button>
           </form>
         </div>
 
-        <div [hidden]="!submitted">
+      <!--  <div [hidden]="!submitted">
            <div class ="row">
             <h2>You submitted the following:</h2>
            </div>
@@ -102,5 +102,5 @@
         </div>
       </div>
 
-      <a href="CREATE-DEAL" class="btn btn-primary" style="text-decoration: none;"  [class.d-none]="!submitted">Go back to create deal page</a>
+      <a href="CREATE-DEAL" class="btn btn-primary" style="text-decoration: none;"  [class.d-none]="!submitted">Go back to create deal page</a>-->
 </div>
