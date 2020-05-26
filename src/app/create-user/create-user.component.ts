@@ -1,7 +1,7 @@
 import { UserServiceService } from './../user-service.service';
 import { Component, OnInit } from '@angular/core';
 import {User} from '../user';
-import { FormBuilder , FormGroup , FormArray } from '@angular/forms';
+import { FormBuilder , FormGroup , FormArray} from '@angular/forms';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Validators } from '@angular/forms';
@@ -16,13 +16,11 @@ export class CreateUserComponent implements OnInit {
   public  dealrights : string[] = ["CREATE" , "UPDATE" , "VIEW"];
   public darray : string[] = [];
   public  uarray : string[] = [];
-
+  public selectedImage ;
   public UserForm;
-  public hideform = false;
-  public hidemsg1 = true;
-  public hidemsg2 = true;
   public  flag : boolean = false;
   public message = "";
+  public url ="assets/img/images.jpg";
   constructor(private _fb:FormBuilder ,private _userservice:UserServiceService) { }
 
   ngOnInit(): void {
@@ -176,6 +174,19 @@ export class CreateUserComponent implements OnInit {
     return <FormArray>this.UserForm.get('drights');
   }
 
+  onSelection(event)
+  {
+    this.selectedImage = event.target.files[0];
+
+    var reader = new FileReader();
+    reader.readAsDataURL(event.target.files[0]);
+    reader.onload = (event:any) =>
+    {
+      this.url = event.target.result;
+    }
+
+  }
+
   func2()
   {
     console.log(this.uarray);
@@ -197,37 +208,51 @@ export class CreateUserComponent implements OnInit {
         regioncodes.push(control.value.region_code);
     });
 
+    const ans = new FormData();
+    ans.append(  'company' , this.UserForm.get('company').value );
+    ans.append(  'imge' , this.selectedImage);
+    ans.append(  'orgcode' , this.UserForm.get('orgcode').value);
+    ans.append(  'username' , this.UserForm.get('username').value );
+    ans.append(  'firstname' , this.UserForm.get('firstname').value );
+    ans.append(  'lastname' , this.UserForm.get('lastname').value );
+    ans.append(  'password' , this.UserForm.get('password').value );
+    ans.append(  'regioncode' , JSON.stringify(regioncodes) );
+    ans.append(  'address' , this.UserForm.get('address').value );
+    ans.append(  'city' , this.UserForm.get('city').value );
+    ans.append(  'country' , this.UserForm.get('country').value );
+    ans.append(  'postalcode' , this.UserForm.get('postalcode').value );
+    ans.append(  'urights' , JSON.stringify(this.uarray));
+    ans.append(  'drights' ,  JSON.stringify(this.darray));
+    ans.append(  'L1' ,  JSON.stringify(l1));
+    ans.append(  'L2' ,  JSON.stringify(l2) );
+    ans.append(  'L3' , JSON.stringify(l3) );
 
 
-    var ans = {
-      company : this.UserForm.get('company').value,
-      imge : "assets/img/images.jpg",
-      orgcode : this.UserForm.get('orgcode').value,
-      username : this.UserForm.get('username').value,
-      firstname : this.UserForm.get('firstname').value,
-      lastname : this.UserForm.get('lastname').value,
-      password : this.UserForm.get('password').value,
-      regioncode : regioncodes ,
-      address : this.UserForm.get('address').value,
-      city : this.UserForm.get('city').value,
-      country : this.UserForm.get('country').value,
-      postalcode : this.UserForm.get('postalcode').value,
-      urights : this.uarray,
-      drights : this.darray,
-      L1 : l1,
-      L2 : l2,
-      L3 : l3
+    console.log(ans.get('imge'));
+
+
+    if(!this.UserForm.valid)
+    {
+      alert("Filling all details is mandatory");
     }
-
-    console.log(ans);
-
-    this.hideform=true;
-
-    this._userservice.addUser(ans).subscribe(params => {
-    this.message = params;
-    this.hidemsg1 = false;
-   },
-   error =>{ this.message = error;  console.log(error);  this.hidemsg1 = false; },() =>{
-   });
+    else if(this.flag == true)
+    {
+      alert("Appropriate region is not filled");
+    }
+    else if(this.UserForm.controls.password.value.length < 6)
+    {
+      alert("Password length should be at least 6");
+    }
+    else
+    {
+       this.UserForm.reset();
+      this._userservice.addUser(ans).subscribe(params =>
+        {
+            this.message = params;
+            alert(this.message);
+        },
+        error =>{ this.message = error;  alert(this.message) },() =>{
+        });
+    }
   }
 }

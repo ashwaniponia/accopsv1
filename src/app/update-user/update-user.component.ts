@@ -21,6 +21,9 @@ public darray : string[] = [];
 public  uarray : string[] = [];
 public userinfo;
 public flag :  boolean = false;
+public url ="assets/img/images.jpg";
+public selectedImage = null ;
+public Hide = true;
   constructor(private _fb: FormBuilder , private _userservice : UserServiceService) { }
 
   public UserForm;
@@ -197,9 +200,8 @@ public flag :  boolean = false;
       console.log(this.userinfo);
       if(this.userinfo.length > 0)
       {
-          this.hideform = false;
-          this.hidemsg = true;
           this.UserForm.reset();
+          this.Hide = false;
           this.UserForm.controls['company'].setValue(this.userinfo[0].company);
           this.UserForm.controls['orgcode'].setValue(this.userinfo[0].orgcode);
           this.UserForm.controls['username'].setValue(this.userinfo[0].username);
@@ -241,11 +243,15 @@ public flag :  boolean = false;
 
               this.UserForm.get('Region_selection').push(group);
           }
+          if(this.userinfo[0].imge != null)
+          this.url = "http://localhost:4000/uploads/" + this.userinfo[0].imge;
+
+          
+          console.log(this.url);
       }
       else
       {
-        console.log("hello");
-        this.hidemsg1 = false;
+          alert("User does not exist");
       }
     });
   }
@@ -288,10 +294,22 @@ public flag :  boolean = false;
     return true;
   }
 
+
+  onSelection(event)
+  {
+    this.selectedImage = event.target.files[0];
+
+    var reader = new FileReader();
+    reader.readAsDataURL(event.target.files[0]);
+    reader.onload = (event:any) =>
+    {
+      this.url = event.target.result;
+    }
+
+  }
+
   func2()
   {
-
-    this.hideform=true;
     console.log(this.uarray);
     console.log(this.darray);
     console.log(this.UserForm.value);
@@ -312,43 +330,50 @@ public flag :  boolean = false;
 
         regioncodes.push(control.value.region_code);
     });
-
-    var ans = {
-      _id : this.userinfo[0]._id,
-      company : this.UserForm.get('company').value,
-      imge : "assets/img/images.jpg",
-      orgcode : this.UserForm.get('orgcode').value,
-      username : this.UserForm.get('username').value,
-      firstname : this.UserForm.get('firstname').value,
-      lastname : this.UserForm.get('lastname').value,
-      address : this.UserForm.get('address').value,
-      city : this.UserForm.get('city').value,
-      country : this.UserForm.get('country').value,
-      postalcode : this.UserForm.get('postalcode').value,
-      urights : this.uarray,
-      drights : this.darray,
-      L1 : l1,
-      L2 : l2,
-      L3 : l3,
-      regioncode :regioncodes
-
-    }
+    this.Hide = true;
+    const ans = new FormData();
+    ans.append('_id' , this.userinfo[0]._id);
+    ans.append(  'company' , this.UserForm.get('company').value );
+    ans.append(  'imge' , this.selectedImage);
+    ans.append(  'orgcode' , this.UserForm.get('orgcode').value);
+    ans.append(  'username' , this.UserForm.get('username').value );
+    ans.append(  'firstname' , this.UserForm.get('firstname').value );
+    ans.append(  'lastname' , this.UserForm.get('lastname').value );
+    ans.append(  'regioncode' , JSON.stringify(regioncodes) );
+    ans.append(  'address' , this.UserForm.get('address').value );
+    ans.append(  'city' , this.UserForm.get('city').value );
+    ans.append(  'country' , this.UserForm.get('country').value );
+    ans.append(  'postalcode' , this.UserForm.get('postalcode').value );
+    ans.append(  'urights' , JSON.stringify(this.uarray));
+    ans.append(  'drights' ,  JSON.stringify(this.darray));
+    ans.append(  'L1' ,  JSON.stringify(l1));
+    ans.append(  'L2' ,  JSON.stringify(l2) );
+    ans.append(  'L3' , JSON.stringify(l3) );
 
     console.log(ans);
-    this.UserForm.reset();
-    this.hideform=true;
 
-    this._userservice.postUser(ans).subscribe(
-      data =>
-      {
-          this.message = data;
-          this.hidemsg = false;
-      },
-      error =>
-      {
-        this.message = error;
-        this.hidemsg = false;
-      }
-    );
+
+    if(!this.UserForm.valid ||  this.flag == true)
+    {
+      alert("Filling all details is mandatory");
+    }
+    else
+    {
+       this.UserForm.reset();
+       this._userservice.postUser(ans).subscribe(
+         data =>
+         {
+             this.message = data;
+             alert(this.message);
+         },
+         error =>
+         {
+           this.message = error;
+           alert(this.message);
+         }
+       );
+    }
+
+
   }
 }

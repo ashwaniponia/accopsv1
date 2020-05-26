@@ -8,7 +8,7 @@
     </div>
   </div>
 
-  <div class = "row" [hidden] = "hideform">
+  <div class = "row" [hidden] = "Hide">
 
     <form [formGroup]="UserForm">
 
@@ -126,19 +126,17 @@
     </div>
     <br>
     <br>
-      <button (click)="func2()" class = "btn btn-primary" type="submit" [disabled]="!UserForm.valid">Submit form</button>
+      <button (click)="func2()" class = "btn btn-primary" type="submit">Submit form</button>
     </div>
     <div class = "col-xl">
-      <img src="assets/img/images.jpg" class="img-fluid" alt="Responsive image">
+      <img src={{url}} class="img-fluid" alt="Responsive image">
+      <input type = "file" (change) = "onSelection($event)">
     </div>
 
     </div>
     </form>
   </div>
 
-  <div class="row" [hidden]="hidemsg">
-    <b>{{message}} </b>
-  </div>
 
 
 </div>
