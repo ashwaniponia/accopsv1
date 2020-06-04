@@ -25,8 +25,8 @@ export class DealService {
     return this._http.post<dealexist>(`${this._dealexistApi}`,obj)
   }
 
-  addDeal(orgname,amt,description , time , regioncode):Observable<any>{
-    let dealprogress = 0,level = 1 , Hide = false , Time = time , username = "karan@99" , Hide_description = true , amount = parseInt(amt) , region_code = regioncode, status="Pending";
+  addDeal(orgname,amt,description , time , regioncode , userName):Observable<any>{
+    let dealprogress = 0,level = 1 , Hide = false , Time = time , username = userName , Hide_description = true , amount = parseInt(amt) , region_code = regioncode, status="Pending";
     const obj ={ dealprogress,description,orgname,amount,level ,Hide , Time , username , Hide_description  , region_code , status};
       return this._http.post(`${this._addApi}`,obj)
 
