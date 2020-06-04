@@ -13,6 +13,8 @@ const moment = require('moment');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+//const io = require('../server');
+//const socket = require('socket.io')
 const storage = multer.diskStorage({
   destination : function(req , file , cb)
   {
@@ -79,7 +81,7 @@ router.get('/viewusers' , function(req , res){
           L3 : 1,
           regioncode : 1} , function(err , data){
             if(err)
-            console.log("Error");
+            res.json("Error");
             else {
               res.json(data);
             }
@@ -154,6 +156,7 @@ try
           }
 
 
+
           var check2 = await notification.create([obj] , session);
           if(check2 == null)
           throw new Error("UpdateError");
@@ -163,6 +166,7 @@ try
         }
         catch(e)
         {
+            res.json("Unsuccessful update");
             await session.abortTransaction();
             session.endSession();
         }
@@ -183,8 +187,6 @@ catch(e)
 
 
 router.post('/updateuser/post' , upload.single('imge') , async function(req , res){
-  session = await mongoose.startSession();
-    session.startTransaction();
 
 
     console.log(req.body);
@@ -315,6 +317,26 @@ router.post('/updateuser/post' , upload.single('imge') , async function(req , re
 
         console.log(array);
         await compute(array);
+        console.log("Compute function has been fired");
+        var sock1 = global.map.get(req.body.username);
+        if(sock1 != null)
+        {
+          sock1.emit(req.body.username + "onUpdate" ,"Some updates have been done to your account. Please Check!!");
+          //sock.disconnect();
+        }
+
+        /*const io = req.app.io;
+        //io.set( 'origins', '*domain.com*:*' );
+        /*io.origins("*:*");
+        const msg = req.body.username + "onUpdate";
+        io.use(socketioJwt.authorize({
+          secret: "THIS IS USED TO SIGN AND VERIFY JWT TOKENS, REPLACE IT WITH YOUR OWN SECRET, IT CAN BE ANY STRING",
+          handshake: true
+        }));
+
+        io.on(msg, (socket) => {
+          socket.emit(msg , "Some updates have been made to your account");
+        });*/
         /*  upusers.findOneAndUpdate({ _id : arr._id} , {
             $set : {
               username : arr.username,
@@ -365,9 +387,9 @@ router.get('/removeuser/delete/:id' , function(req , res){
   console.log('Delete request for the given user');
   users.deleteOne({"_id":req.params.id}).exec(function(err,viewusers){
   	if(err){
-  		console.log("Error in deleting record");
+  		res.json("Unsuccessful User deletion");
   	}else{
-  		console.log("Successful Deletion Process");
+  		res.json("Successful user deletion");
   	}
   });
 });
@@ -598,7 +620,8 @@ try{
                   completion_time : req.body.Time,
                   username : req.body.username,
                   Hide_description : req.body.Hide_description,
-                  region_code : req.body.region_code
+                  region_code : req.body.region_code,
+                  status : "Pending"
                };
 
                console.log(deal);
@@ -647,7 +670,7 @@ router.get('/viewdeals', function(req , res){
   console.log("Hello");
   adddeal.find({}).exec(function(err , dealdata){
       if(err)
-      console.log("Error");
+      res.json("Error");
       else {
         var current_date = new Date();
         var end = moment(current_date , "DD.MM.YYYY");
@@ -722,6 +745,7 @@ try
       }
       catch(e)
       {
+        res.json("Unsuccessful Find operation");
           await session.abortTransaction();
           session.endSession();
           throw e;
@@ -843,6 +867,7 @@ catch(e)
           }
           catch(e)
           {
+              res.json("Unsuccessful Find Operation");
               await session.abortTransaction();
               session.endSession();
               throw e;
@@ -961,6 +986,7 @@ catch(e)
               }
               catch(e)
               {
+                  res.json("Unsuccessful Find Operation");
                   await session.abortTransaction();
                   session.endSession();
                   throw e;
@@ -1085,10 +1111,18 @@ try
              message : mssg
            }
 
+           var sock = global.map.get(req.body.item.username);
+           if(sock != null)
+           {
+             sock.emit(req.body.item.username + "onL1auth" , "Your L1 Authorisation for Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " is approved");
+             //sock.disconnect();
+           }
+
 
            var check2 = await notification.create([obj] , session);
            if(check2 == null)
            throw new Error("CreateError");
+           res.json("Successful L1 Authentication");
            await session.commitTransaction();
            session.endSession();
        }
@@ -1096,6 +1130,7 @@ try
        {
           await session.abortTransaction();
           session.endSession();
+          res.json("Unsuccessful L1 Authentication");
           throw e;
        }
 
@@ -1125,20 +1160,31 @@ try
               username : req.body.item.username,
               message : mssg
             }
+            var f = 0;
 
+            var sock = global.map.get(req.body.item.username);
+            if(sock != null)
+            {
+              sock.emit(req.body.item.username + "onL3auth" , "Your deal having Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " is shifted to L3 approval");
+              //sock.disconnect();
+            }
 
             var check2 = await notification.create([obj] , session);
             if(check2 == null)
             throw new Error("CreateError");
+            res.json("L3 authorisation successful");
             await session.commitTransaction();
             session.endSession();
+            //next();
 
           }
           catch(e)
           {
+            res.json("L3 authorisation unsuccessful");
             await session.abortTransaction();
             session.endSession();
             throw e;
+            //next();
           }
     });
 }
@@ -1190,6 +1236,16 @@ try
           if(check5 == null)
             throw new Error("Error in Update function");
 
+            var f = 0;
+
+            var sock = global.map.get(check3[i].username);
+            if(sock != null)
+            {
+              sock.emit(check3[i].username + "reject" , "Your deal for Region code : " + check3[i].region_code + " and organisation : " + check3[i].orgname + " is rejected");
+              //sock.disconnect();
+            }
+
+
 
             var mssg = "Your deal for Region code : " + check3[i].region_code + " and organisation : " + check3[i].orgname + " is rejected";
             var obj = {
@@ -1204,17 +1260,24 @@ try
         }
 
 
-        var mssg = "Your deal for Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " is authorised";
+        mssg = "Your deal for Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " is authorised";
         var obj = {
           username : req.body.item.username,
           message : mssg
+        }
+
+        var sock1 = global.map.get(req.body.item.username);
+        if(sock1 != null)
+        {
+          sock1.emit(req.body.item.username + "auth" , "Your deal for Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " is accepted");
+          //sock.disconnect();
         }
 
 
         var check7 = await notification.create([obj] , session);
         if(check7  == null)
         throw new Error("CreateError");
-
+        res.json("Successful Authentication");
         await session.commitTransaction();
         session.endSession();
     }
@@ -1222,6 +1285,7 @@ try
     {
       await session.abortTransaction();
       session.endSession();
+      res.json("Unsuccessful Authentication");
       throw e;
     }
   });

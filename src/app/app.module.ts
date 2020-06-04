@@ -27,6 +27,9 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { JwtInterceptor, ErrorInterceptor, fakeBackendProvider } from './_helpers';
 import { NotificationsComponent } from './notifications/notifications.component';
+//import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+//import { ToastrModule } from 'ngx-toastr';
+
 
 @NgModule({
   declarations: [
@@ -63,11 +66,10 @@ import { NotificationsComponent } from './notifications/notifications.component'
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
             { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-    
+
             // provider used to create fake backend
             //fakeBackendProvider
           ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
-

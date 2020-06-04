@@ -28,14 +28,12 @@ export class CreateDealComponent implements OnInit {
     }
     else
     {
-         dealForm.resetForm();
-         this._dealservice.addDeal(this.DummyDeal.OrgName,this.DummyDeal.amount,this.DummyDeal.description , this.DummyDeal.time , this.DummyDeal.regioncode).subscribe(params =>{
+         this._dealservice.addDeal(this.DummyDeal.OrgName,this.DummyDeal.amount,this.DummyDeal.description , this.DummyDeal.time , this.DummyDeal.regioncode , GlobalConstants.info.username).subscribe(params =>{
            this.message = params;
+            dealForm.resetForm();
            alert(this.message);
 
-         },error =>this.message=error,() =>{
-           alert("Error in Submission");
-           this.router.navigateByUrl('/CREATE-DEAL');
+         },error =>{this.message=error  ;    alert("Error in Submission"); },() =>{
         });
     }
   }

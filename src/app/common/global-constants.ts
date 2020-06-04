@@ -12,4 +12,6 @@ export class GlobalConstants {
     public static DeleteUser : boolean = false;
     public static notify : string[]  = [];
     public static info;
+    public static sock : boolean = false;
+    public static isloggedin : boolean = false;
 }
