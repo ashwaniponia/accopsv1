@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { GlobalConstants  } from '../common/global-constants';
-
+import io from 'socket.io-client';
 import { environment } from '@environments/environment';
 import { User } from '@app/_models';
 import { User1 } from '../_models/user1';
@@ -13,12 +13,19 @@ export class AccountService {
     private userSubject: BehaviorSubject<User>;
     public user: Observable<User>;
 
+    public socket=null;
     constructor(
         private router: Router,
         private http: HttpClient
     ) {
         this.userSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('user')));
         this.user = this.userSubject.asObservable();
+    }
+
+    public getSocket()
+    {
+      console.log(this.socket);
+      return this.socket;
     }
 
     public get userValue(): User {
@@ -29,9 +36,6 @@ export class AccountService {
         return this.http.post<User>(`${environment.apiUrl}/users/authenticate`, { username, password })
             .pipe(map(user => {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
-                GlobalConstants.info = user;
-                console.log(user);
-                console.log(GlobalConstants.info);
                 localStorage.setItem('user', JSON.stringify(user));
                 this.userSubject.next(user);
                 return user;

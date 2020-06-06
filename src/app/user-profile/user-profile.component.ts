@@ -14,9 +14,11 @@ export class UserProfileComponent implements OnInit {
   constructor(private _userservice : UserServiceService) { }
 
   ngOnInit(): void {
-    this.userModel = GlobalConstants.info;
-    console.log(GlobalConstants.info);
-    if(this.userModel.imge != null)
-    this.url = "http://localhost:4000/uploads/" + this.userModel.imge;
+    this._userservice.getUser(GlobalConstants.info.username).subscribe(data=>{
+      //console.log(data);
+        this.userModel = data;
+        if(this.userModel.imge != null)
+        this.url = "http://localhost:4000/uploads/" + this.userModel.imge;
+    });
 }
 }

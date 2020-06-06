@@ -1,6 +1,7 @@
 ﻿import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NotificationService}from '../notification.service'
 import { first } from 'rxjs/operators';
 
 import { AccountService, AlertService } from '@app/_services';
@@ -20,7 +21,8 @@ export class LoginComponent implements OnInit {
         private route: ActivatedRoute,
         private router: Router,
         private accountService: AccountService,
-        private alertService: AlertService
+        private alertService: AlertService,
+        private notification_service : NotificationService
     ) { }
 
     ngOnInit() {
@@ -53,6 +55,10 @@ export class LoginComponent implements OnInit {
             .subscribe(
                 data => {
                     this.router.navigate([this.returnUrl]);
+                    this.notification_service.getFreshNotifications(this.f.username.value).subscribe(data=>{
+                           if(data > 0)
+                           alert("you have got "+data + " new notifications");
+                    });
                 },
                 error => {
                     this.alertService.error(error);

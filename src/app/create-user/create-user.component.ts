@@ -62,44 +62,6 @@ export class CreateUserComponent implements OnInit {
   }
 
 
-  check(alevel , rcode)
-  {
-    if(alevel == "")
-    {
-      console.log("false");
-      this.flag = false;
-      console.log(this.flag);
-      return false;
-    }
-
-    if(alevel == "L1" && rcode.match(/^[A-Z]+$/))
-    {
-      console.log("false");
-      this.flag = false;
-      console.log(this.flag);
-      return false;
-    }
-
-    if(alevel == "L2" && rcode.match(/^[A-Z]*[0-9]$/))
-    {
-      console.log("false");
-      this.flag = false;
-      console.log(this.flag);
-      return false;
-    }
-
-    if(alevel == "L3" && rcode.match(/^[A-Z]*[0-9][0-9][0-9][0-9]$/))
-    {
-      console.log("false");
-      this.flag = false;
-      console.log(this.flag);
-      return false;
-    }
-    console.log("true");
-    this.flag = true;
-    console.log(this.flag);
-    return true;
-  }
 
 
 
@@ -185,6 +147,61 @@ export class CreateUserComponent implements OnInit {
       this.url = event.target.result;
     }
 
+  }
+
+  check(alevel , rcode)
+  {
+
+    if(this.darray.includes("UPDATE"))
+    {
+          if((alevel == "") && ( rcode.match(/^[A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z]$/) || rcode.match(/^[A-Z][A-Z][A-Z][A-Z][0][0][0][0][0]$/) || rcode.match(/^[A-Z][A-Z][0][0][0][0][0][0][0]$/)  ))
+          {
+            console.log("false");
+            this.flag = false;
+            return false;
+          }
+
+          else if(alevel == "L1" && rcode.match(/^[A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z]$/))
+          {
+            console.log("false");
+            this.flag = false;
+            return false;
+          }
+
+          else if(alevel == "L2" && rcode.match(/^[A-Z][A-Z][A-Z][A-Z][0][0][0][0][0]$/))
+          {
+            console.log("false");
+            this.flag = false;
+            return false;
+          }
+
+          else if(alevel == "L3" && rcode.match(/^[A-Z][A-Z][0][0][0][0][0][0][0]$/))
+          {
+            console.log("false");
+            this.flag = false;
+            return false;
+          }
+
+          else
+          {
+            console.log("true");
+            this.flag = true;
+            return true;
+          }
+    }
+    else
+    {
+        if(rcode.match(/^[A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z]$/) || rcode.match(/^[A-Z][A-Z][A-Z][A-Z][0][0][0][0][0]$/) || rcode.match(/^[A-Z][A-Z][0][0][0][0][0][0][0]$/) )
+        {
+            this.flag = false;
+            return false;
+        }
+        else
+        {
+            this.flag = true;
+            return true;
+        }
+    }
   }
 
   func2()

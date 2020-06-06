@@ -13,8 +13,6 @@ const moment = require('moment');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-//const io = require('../server');
-//const socket = require('socket.io')
 const storage = multer.diskStorage({
   destination : function(req , file , cb)
   {
@@ -43,11 +41,20 @@ var flag = 0;
   });
 
 
+router.get('/getuser' , function(req , res){
+  users.findOne({username : req.query.username} , null  , function(err , data){
+      if(err)
+      res.json(err);
+      else
+      res.json(data);
+  });
+});
+
 
 
 router.get('/viewusers' , function(req , res){
   console.log('Get request of all users');
-  users.find({}).exec( async function(err , viewusers){
+  users.find({}).exec( function(err , viewusers){
     if(err){
       res.json("Error");
     }
@@ -94,81 +101,119 @@ try
 {
     var compute = async function(arr)
     {
-        console.log("Look Here");
-        console.log(arr._id);
         const session = await mongoose.startSession();
         session.startTransaction();
         try
         {
-          var check1 = null;
-          if(arr.imge == null)
-          {
-           check1 = await upusers.findOneAndUpdate({ _id : arr._id} , {
-            $set : {
-              username : arr.username,
-              company :arr.company,
-              address :arr.address,
-              city : arr.city,
-              country : arr.country,
-              firstname :arr.firstname,
-              lastname :arr.lastname,
-              orgcode :arr.orgcode,
-              postalcode :arr.postalcode,
-              urights :arr.urights,
-              drights :arr.drights,
-              L1 : arr.L1,
-              L2 : arr.L2,
-              L3 : arr.L3,
-              regioncode : arr.regioncode,
 
+
+          var duplicate_regions = [];
+          for(var i = 0 ; i < arr.L1.length ; i++){
+            var  check1 = await crusers.find({L1 : {$in : [arr.L1[i]]}} ,null , session);
+            if(check1 == null)
+            throw new Error("Find Error");
+            if(check1.length > 0)
+            {
+              duplicate_regions.push(arr.L1[i]);
             }
-          } , session );
-        }
-        else {
-          check1 = await upusers.findOneAndUpdate({ _id : arr._id} , {
-           $set : {
-             username : arr.username,
-             company :arr.company,
-             imge : arr.imge,
-             address :arr.address,
-             city : arr.city,
-             country : arr.country,
-             firstname :arr.firstname,
-             lastname :arr.lastname,
-             orgcode :arr.orgcode,
-             postalcode :arr.postalcode,
-             urights :arr.urights,
-             drights :arr.drights,
-             L1 : arr.L1,
-             L2 : arr.L2,
-             L3 : arr.L3,
-             regioncode : arr.regioncode,
+          }
 
-           }
-         } , session );
-        }
-          if(check1 == null)
-          throw new Error("UpdateError");
-
-          var obj = {
-            username : arr.username,
-            message : "Some updates have been made ! Please Check !"
+          for(var i = 0 ; i < arr.L2.length ; i++){
+            var  check2 = await crusers.find({L2 : {$in : [arr.L2[i]]}} ,null , session);
+            if(check2 == null)
+            throw new Error("Find Error");
+            if(check2.length > 0)
+            {
+              duplicate_regions.push(arr.L2[i]);
+            }
           }
 
 
+          for(var i = 0 ; i < arr.L3.length ; i++){
+            var  check3 = await crusers.find({L3 : {$in : [arr.L3[i]]}} ,null , session);
+            if(check3 == null)
+            throw new Error("Find Error");
+            if(check3.length > 0)
+            {
+              duplicate_regions.push(arr.l3[i]);
+            }
+          }
 
-          var check2 = await notification.create([obj] , session);
-          if(check2 == null)
-          throw new Error("UpdateError");
+
+          if(duplicate_regions.length == 0)
+          {
+              var check4;
+              if(arr.imge == null)
+              {
+               check4 = await upusers.findOneAndUpdate({ _id : arr._id} , {
+                $set : {
+                  username : arr.username,
+                  company :arr.company,
+                  address :arr.address,
+                  city : arr.city,
+                  country : arr.country,
+                  firstname :arr.firstname,
+                  lastname :arr.lastname,
+                  orgcode :arr.orgcode,
+                  postalcode :arr.postalcode,
+                  urights :arr.urights,
+                  drights :arr.drights,
+                  L1 : arr.L1,
+                  L2 : arr.L2,
+                  L3 : arr.L3,
+                  regioncode : arr.regioncode,
+
+                }
+              } , session );
+            }
+            else {
+              check4 = await upusers.findOneAndUpdate({ _id : arr._id} , {
+               $set : {
+                 username : arr.username,
+                 company :arr.company,
+                 imge : arr.imge,
+                 address :arr.address,
+                 city : arr.city,
+                 country : arr.country,
+                 firstname :arr.firstname,
+                 lastname :arr.lastname,
+                 orgcode :arr.orgcode,
+                 postalcode :arr.postalcode,
+                 urights :arr.urights,
+                 drights :arr.drights,
+                 L1 : arr.L1,
+                 L2 : arr.L2,
+                 L3 : arr.L3,
+                 regioncode : arr.regioncode,
+
+               }
+             } , session );
+            }
+              if(check4 == null)
+              throw new Error("UpdateError");
+              var curr_date = new Date();
+              var obj = {
+                username : arr.username,
+                message : "Some updates have been made ! Please Check !",
+                date : curr_date,
+                status : "unseen"
+              }
+
+
+
+              var check5 = await notification.create([obj] , session);
+              if(check5 == null)
+              throw new Error("UpdateError");
+          }
           await session.commitTransaction();
           session.endSession();
-          return true;
+          return duplicate_regions;
         }
         catch(e)
         {
-            res.json("Unsuccessful update");
             await session.abortTransaction();
             session.endSession();
+            throw e;
         }
     }
 }
@@ -316,63 +361,18 @@ router.post('/updateuser/post' , upload.single('imge') , async function(req , re
        }
 
         console.log(array);
-        await compute(array);
-        console.log("Compute function has been fired");
+        var duplicacy = await compute(array);
+        console.log(duplicacy);
+        if(duplicacy.length > 0){
+            JSON.stringify(duplicacy);
+            return res.json(duplicacy + " These are the regions already present in the database");
+        }
         var sock1 = global.map.get(req.body.username);
         if(sock1 != null)
         {
           sock1.emit(req.body.username + "onUpdate" ,"Some updates have been done to your account. Please Check!!");
-          //sock.disconnect();
         }
-
-        /*const io = req.app.io;
-        //io.set( 'origins', '*domain.com*:*' );
-        /*io.origins("*:*");
-        const msg = req.body.username + "onUpdate";
-        io.use(socketioJwt.authorize({
-          secret: "THIS IS USED TO SIGN AND VERIFY JWT TOKENS, REPLACE IT WITH YOUR OWN SECRET, IT CAN BE ANY STRING",
-          handshake: true
-        }));
-
-        io.on(msg, (socket) => {
-          socket.emit(msg , "Some updates have been made to your account");
-        });*/
-        /*  upusers.findOneAndUpdate({ _id : arr._id} , {
-            $set : {
-              username : arr.username,
-              imge : arr.imge,
-              company :arr.company,
-              address :arr.address,
-              city : arr.city,
-              country : arr.country,
-              firstname :arr.firstname,
-              lastname :arr.lastname,
-              orgcode :arr.orgcode,
-              postalcode :arr.postalcode,
-              urights :arr.urights,
-              drights :arr.drights,
-              L1 : arr.L1,
-              L2 : arr.L2,
-              L3 : arr.L3,
-              regioncode : arr.regioncode,
-
-            }
-          } , function(err , data){
-              if(err)
-              {
-                console.log(err);
-              }
-              else {
-
-                console.log("You have finally reached here");
-                console.log(data);
-                    res.json("User Updated Successfully");
-              }
-
-
-          });*/
-            res.json("User Updated Successfully");
-
+        res.json("User Updated Successfully");
       }
       else
       {
@@ -431,144 +431,180 @@ var duplicatesExist = function(l)
 }
 
 
+try
+{
+    router.post('/adduser' ,  upload.single('imge') , async function(req , res){
+     console.log(req.body);
+      var l1 = JSON.parse(req.body.L1);
+      var l2 = JSON.parse(req.body.L2);
+      var l3 = JSON.parse(req.body.L3);
+      var regioncode = JSON.parse(req.body.regioncode);
+      l1.sort();
+      l2.sort();
+      l3.sort();
 
-router.post('/adduser' ,  upload.single('imge') , function(req , res){
-
-console.log(req.file);
- //console.log(req.file);
- console.log(req.body);
-  var l1 = JSON.parse(req.body.L1);
-  var l2 = JSON.parse(req.body.L2);
-  var l3 = JSON.parse(req.body.L3);
-  var regioncode = JSON.parse(req.body.regioncode);
-  l1.sort();
-  l2.sort();
-  l3.sort();
-
-  console.log(l1);
-  console.log(l2);
-  console.log(l3);
+      console.log(l1);
+      console.log(l2);
+      console.log(l3);
 
 
-  var final_check = 0;
-  final_check = duplicatesExist(l1);
-  final_check = Math.max(final_check , duplicatesExist(l2));
-  final_check = Math.max(final_check , duplicatesExist(l3));
-  final_check = Math.max(final_check , duplicatesExist(regioncode));
-  for(var x = 0 ; x < l1.length ; x++)
-  {
-      var l =  0 , r = l2.length-1;
-      console.log(l);
-      console.log(r);
-      while(l <= r)
+      var final_check = 0;
+      final_check = duplicatesExist(l1);
+      final_check = Math.max(final_check , duplicatesExist(l2));
+      final_check = Math.max(final_check , duplicatesExist(l3));
+      final_check = Math.max(final_check , duplicatesExist(regioncode));
+      for(var x = 0 ; x < l1.length ; x++)
       {
-        var mid = Math.floor((l+r)/2);
-        console.log(mid);
-        if(l2[mid].localeCompare(l1[x]) == -1)
-        l = mid+1;
-        else
-        r = mid-1;
+          var l =  0 , r = l2.length-1;
+          console.log(l);
+          console.log(r);
+          while(l <= r)
+          {
+            var mid = Math.floor((l+r)/2);
+            console.log(mid);
+            if(l2[mid].localeCompare(l1[x]) == -1)
+            l = mid+1;
+            else
+            r = mid-1;
+          }
+          if(l-1 >= 0)
+          {
+            final_check = compare(l1[x] , l2[l-1]);
+          }
       }
-      if(l-1 >= 0)
+
+
+      for(var x = 0 ; x < l1.length ; x++)
       {
-        final_check = compare(l1[x] , l2[l-1]);
+          var l =  0 , r = l3.length-1;
+          while(l <= r)
+          {
+            var mid = Math.floor((l+r)/2);
+            if(l3[mid].localeCompare(l1[x]) == -1)
+            l = mid+1;
+            else
+            r = mid-1;
+          }
+          if(l-1 >= 0)
+          {
+            final_check = compare(l1[x] , l3[l-1]);
+          }
       }
-  }
 
-
-  for(var x = 0 ; x < l1.length ; x++)
-  {
-      var l =  0 , r = l3.length-1;
-      while(l <= r)
+      for(var x = 0 ; x < l2.length ; x++)
       {
-        var mid = Math.floor((l+r)/2);
-        if(l3[mid].localeCompare(l1[x]) == -1)
-        l = mid+1;
-        else
-        r = mid-1;
+          var l =  0 , r = l3.length-1;
+          while(l <= r)
+          {
+            var mid = Math.floor((l+r)/2);
+            if(l3[mid].localeCompare(l2[x]) == -1)
+            l = mid+1;
+            else
+            r = mid-1;
+          }
+          if(l-1 >= 0)
+          {
+            final_check = compare(l2[x] , l3[l-1]);
+          }
       }
-      if(l-1 >= 0)
+      flag = 1;
+      var hash = bcrypt.hashSync(req.body.password, 10);
+      var ans = {
+        username : req.body.username,
+        imge : req.file.originalname ,
+        hash : hash ,
+        company : req.body.company,
+        address : req.body.address,
+        city : req.body.city,
+        country : req.body.country ,
+        firstname : req.body.firstname,
+        lastname : req.body.lastname,
+        orgcode : req.body.orgcode,
+        postalcode : parseInt(req.body.postalcode),
+        totaldeals : 0,
+        acceptedeals : 0,
+        rejecteddeals : 0,
+
+        dealspending : 0,
+
+        maxval :0,
+        Hide : true,
+
+        Hide1 : false,
+        urights : JSON.parse(req.body.urights),
+        drights : JSON.parse(req.body.drights),
+        L1 : JSON.parse(req.body.L1),
+        L2 :JSON.parse(req.body.L2),
+        L3 : JSON.parse(req.body.L3),
+        regioncode : JSON.parse(req.body.regioncode)
+      };
+      if(final_check == 1)
+      return res.json("You assigned same region to the user! User not created !")
+      console.log(ans);
+      const session = await mongoose.startSession();
+      session.startTransaction();
+      try
       {
-        final_check = compare(l1[x] , l3[l-1]);
-      }
-  }
+          var duplicacy_check1 = 0;
+          var duplicate_regions = [];
+          for(var i = 0 ; i < l1.length ; i++){
+            var  check1 = await crusers.find({L1 : {$in : [l1[i]]}} ,null , session);
+            if(check1 == null)
+            throw new Error("Find Error");
+            if(check1.length > 0)
+            {
+              duplicate_regions.push(l1[i]);
+              duplicacy_check1 = 1;
+            }
+          }
 
-  for(var x = 0 ; x < l2.length ; x++)
-  {
-      var l =  0 , r = l3.length-1;
-      while(l <= r)
-      {
-        var mid = Math.floor((l+r)/2);
-        if(l3[mid].localeCompare(l2[x]) == -1)
-        l = mid+1;
-        else
-        r = mid-1;
-      }
-      if(l-1 >= 0)
-      {
-        final_check = compare(l2[x] , l3[l-1]);
-      }
-  }
-  flag = 1;
-  var hash = bcrypt.hashSync(req.body.password, 10);
-  var ans = {
-    username : req.body.username,
-    imge : req.file.originalname ,
-    hash : hash ,
-    company : req.body.company,
-    address : req.body.address,
-    city : req.body.city,
-    country : req.body.country ,
-    firstname : req.body.firstname,
-    lastname : req.body.lastname,
-    orgcode : req.body.orgcode,
-    postalcode : parseInt(req.body.postalcode),
-    totaldeals : 0,
-    acceptedeals : 0,
-    rejecteddeals : 0,
-
-    dealspending : 0,
-
-    maxval :0,
-    Hide : true,
-
-    Hide1 : false,
-    urights : JSON.parse(req.body.urights),
-    drights : JSON.parse(req.body.drights),
-    L1 : JSON.parse(req.body.L1),
-    L2 :JSON.parse(req.body.L2),
-    L3 : JSON.parse(req.body.L3),
-    regioncode : JSON.parse(req.body.regioncode)
-  };
-
-  console.log(ans);
-
-  if(final_check == 0)
-  {
-      crusers.create(ans, async function(err,result){
-        if(err){
-          console.log(err);
-          res.json("Error in user creation ");
-        }else{
-
-          /*var io = req.app.get('socketio');
-          await io.on('connection' , async function(socket){
-            if(flag == 1)
-               socket.emit('message' , "Users created");
-
-            flag = 0;
-          });*/
+          for(var i = 0 ; i < l2.length ; i++){
+            var  check2 = await crusers.find({L2 : {$in : [l2[i]]}} ,null , session);
+            if(check2 == null)
+            throw new Error("Find Error");
+            if(check2.length > 0)
+            {
+              duplicate_regions.push(l2[i]);
+              duplicacy_check1 = 1;
+            }
+          }
 
 
-          res.json("User Created Successfully");
-        }
-      });
-  }
-  else {
-    res.json("You assigned same region to the user! User not created !");
-  }
-
-});
+          for(var i = 0 ; i < l3.length ; i++){
+            var  check3 = await crusers.find({L3 : {$in : [l3[i]]}} ,null , session);
+            if(check3 == null)
+            throw new Error("Find Error");
+            if(check3.length > 0)
+            {
+              duplicate_regions.push(l3[i]);
+              duplicacy_check1 = 1;
+            }
+          }
+          console.log("This is duplicacy");
+          console.log(duplicacy_check1);
+          if(duplicacy_check1 == 1)
+          {
+              var regions = JSON.stringify(duplicate_regions);
+              res.json(regions + " These Regions Entered are already present in the database");
+          }
+          else {
+            crusers.create([ans] , session);
+          }
+      await session.commitTransaction();
+      session.endSession();
+    }
+    catch(e)
+    {
+        await session.abortTransaction();
+        session.endSession();
+        res.json("User creation unsuccessful");
+        throw e;
+    }
+    });
+}
+catch(e){
+  e.message();
+}
 
 //Notifications code is here
 
@@ -580,30 +616,70 @@ router.get('/Notifications' , function(req , res){
         res.json(err);
         else
         {
-          console.log(data);
-          res.json(data);
+          var notifications = [];
+          var curr_date = new Date();
+          var end = moment(curr_date , "DD.MM.YYYY");
+          for(var i = 0  ; i  < data.length ; i++)
+          {
+              var start =  moment(data[i].date , "DD.MM.YYYY");
+              var rem = moment.duration(end.diff(start));
+              var minutes = rem.asMinutes();
+              var hours = rem.asHours();
+              var days = rem.asDays();
+              var metric = "minutes";
+              var time_swayed  = minutes
+              if(minutes > 60)
+              {
+                  time_swayed = hours;
+                  metric = "hours";
+              }
+              if(hours > 24)
+              {
+                  time_swayed  = days;
+                  metric = "days";
+              }
+              var obj = {
+                  username : data[i].username,
+                  mssg : data[i].message,
+                  time : time_swayed,
+                  Metric : metric
+              }
+              notifications.push(obj)
+          }
+          console.log(notifications);
+          res.json(notifications);
         }
     });
 });
 
 
 
-//      ALL DEALS START FROM HERE
+
+router.post('/updateNotifications' ,function(req , res){
+  console.log("Here it is " + req.body.username);
+    notification.update({username : req.body.username , status : "unseen"} , {$set : {status : "seen"}} , {"multi": true} , function(err , data){
+      if(err)
+      res.json(err);
+      else
+      res.json(data);
+    });
+});
 
 
-/*router.post('/Dealexist',function(req,res){
-
-     deals.count({"orgname":req.body.orgname,"description":req.body.description,"amount":req.body.amount},function(err,count){
-      console.log(count)
-      if(err){
-         res.status(400).status("unable to process");
-      }else if(count > 0 ){
-          res.status(200).json({'exist' : 'true'});
-      }else{
-          res.status(200).json({'exist' : 'false'});
+router.get('/getNotificationcount' , function(req , res){
+    notification.find({status : "unseen" , username : req.query.username}).exec(function(err , data){
+      if(err)
+      res.json(err);
+      else {
+        var cnt = data.length;
+        res.json(cnt);
       }
-     })
-});*/
+    });
+});
+
+
+
+//      ALL DEALS START FROM HERE
 
 try{
     router.post('/addDeal',async function(req,res){
@@ -642,6 +718,31 @@ try{
                  console.log(check);
                  if(check == null)
                  throw new Error("Error in deal Creation");
+
+
+                 var code = req.body.region_code;
+
+
+                 var curr_date = new Date();
+
+                const check3 = await users.find({L1 : {$in : [code]}} , null , session);
+                if(check3 == null)
+                throw new Error("FindError");
+                var obj1 = {
+                  username : check3[0].username,
+                  message : "L1 Authorisation for Region code : " + req.body.region_code + " and organisation : " + req.body.orgname + " by : " + req.body.username + " is pending",
+                  date : curr_date,
+                  status : "unseen"
+                }
+
+                var check4 = await notification.create([obj1] , session);
+                if(check4 == null)
+                throw new Error("CreateError");
+
+                var sock2 = global.map.get(check3[0].username);
+                if(sock2 != null){
+                  sock2.emit(check3[0].username+"L1pending" ,  "L1 Authorisation for Region code : " + req.body.region_code + " and organisation : " + req.body.orgname + " by : " + req.body.username + " is pending");
+                }
 
                  res.json("Deal Registered Successfully");
 
@@ -947,7 +1048,6 @@ catch(e)
                       sub = days_completed;
                     }
                     console.log(completed);
-                    //console.log(days_remaining);
                     var days_remaining = temp1[i].completion_time-sub;
                     console.log(days_remaining);
                     var x;
@@ -1106,22 +1206,64 @@ try
            if(check1 == null)
            throw new Error("UpdateError");
            var mssg = "Your L1 Authorisation for Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " is approved";
+           var curr_date = new Date();
            var obj = {
              username : req.body.item.username,
-             message : mssg
+             message : mssg,
+             date : curr_date,
+             status : "unseen"
            }
 
            var sock = global.map.get(req.body.item.username);
            if(sock != null)
            {
              sock.emit(req.body.item.username + "onL1auth" , "Your L1 Authorisation for Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " is approved");
-             //sock.disconnect();
            }
+
+
+
+
 
 
            var check2 = await notification.create([obj] , session);
            if(check2 == null)
            throw new Error("CreateError");
+
+           var code = "";
+           for(var i = 0 ; i < 4 ; i++)
+           {
+              code += req.body.item.region_code[i];
+           }
+
+           for(var i  = 4 ; i < 9 ; i++)
+           {
+             code += '0';
+           }
+
+           console.log(code);
+
+
+          const check3 = await users.find({L2 : {$in : [code]}} , null , session);
+          console.log(check3[0].username);
+          if(check3 == null)
+          throw new Error("FindError");
+          var obj1 = {
+            username : check3[0].username,
+            message : "L2 Authorisation for Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " by : " + req.body.item.username + " is pending",
+            date : curr_date,
+            status : "unseen"
+          }
+
+           var check4 = await notification.create([obj1] , session);
+           if(check4 == null)
+           throw new Error("CreateError");
+
+
+           var sock2 = global.map.get(check3[0].username);
+           if(sock2 != null){
+             sock2.emit(check3[0].username+"L2pending" ,  "L2 Authorisation for Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " by : " + req.body.item.username + " is pending");
+           }
+
            res.json("Successful L1 Authentication");
            await session.commitTransaction();
            session.endSession();
@@ -1156,9 +1298,12 @@ try
 
 
             var mssg = "Your deal having Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " is shifted to L3 approval";
+            var curr_date = new Date();
             var obj = {
               username : req.body.item.username,
-              message : mssg
+              message : mssg,
+              date : curr_date,
+              status : "unseen"
             }
             var f = 0;
 
@@ -1166,17 +1311,48 @@ try
             if(sock != null)
             {
               sock.emit(req.body.item.username + "onL3auth" , "Your deal having Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " is shifted to L3 approval");
-              //sock.disconnect();
             }
 
             var check2 = await notification.create([obj] , session);
             if(check2 == null)
             throw new Error("CreateError");
+
+            var code = "";
+            for(var i = 0 ; i < 2 ; i++)
+            {
+               code += req.body.item.region_code[i];
+            }
+
+            for(var i  = 2 ; i < 9 ; i++)
+            {
+              code += '0';
+            }
+
+
+
+           const check3 = await users.find({L3 : {$in : [code]}} , null , session);
+           if(check3 == null)
+           throw new Error("FindError");
+           var obj1 = {
+             username : check3[0].username,
+             message : "L3 Authorisation for Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " by : " + req.body.item.username + " is pending",
+             date : curr_date,
+             status : "unseen"
+           }
+
+           var check4 = await notification.create([obj1] , session);
+           if(check4 == null)
+           throw new Error("CreateError");
+
+           var sock2 = global.map.get(check3[0].username);
+           if(sock2 != null){
+             sock2.emit(check3[0].username+"L3pending" ,  "L2 Authorisation for Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " by : " + req.body.item.username + " is pending");
+           }
+
+
             res.json("L3 authorisation successful");
             await session.commitTransaction();
             session.endSession();
-            //next();
-
           }
           catch(e)
           {
@@ -1184,7 +1360,6 @@ try
             await session.abortTransaction();
             session.endSession();
             throw e;
-            //next();
           }
     });
 }
@@ -1242,15 +1417,15 @@ try
             if(sock != null)
             {
               sock.emit(check3[i].username + "reject" , "Your deal for Region code : " + check3[i].region_code + " and organisation : " + check3[i].orgname + " is rejected");
-              //sock.disconnect();
             }
 
-
-
             var mssg = "Your deal for Region code : " + check3[i].region_code + " and organisation : " + check3[i].orgname + " is rejected";
+            var curr_date = new Date();
             var obj = {
               username : check3[i].username,
-              message : mssg
+              message : mssg,
+              date : curr_date,
+              status : unseen
             }
 
 
@@ -1261,16 +1436,17 @@ try
 
 
         mssg = "Your deal for Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " is authorised";
+        var curr_date = new Date();
         var obj = {
           username : req.body.item.username,
-          message : mssg
+          message : mssg,
+          date : curr_date
         }
 
         var sock1 = global.map.get(req.body.item.username);
         if(sock1 != null)
         {
           sock1.emit(req.body.item.username + "auth" , "Your deal for Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " is accepted");
-          //sock.disconnect();
         }
 
 
