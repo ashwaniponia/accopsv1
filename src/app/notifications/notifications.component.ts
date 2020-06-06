@@ -14,13 +14,20 @@ export class NotificationsComponent implements OnInit {
   {
     this._notificationserv.getNotifications(GlobalConstants.info.username).subscribe(data=>{
       console.log(data);
-      for(var x = 0 ; x < data.length ; x++)
-      {
-        GlobalConstants.notify.push(data[x].message);
 
+      for(var i = 0 ; i < data.length ; i++){
+        console.log(Math.round(data[i].time));
+        data[i].time = Math.round(data[i].time);
       }
-      console.log(GlobalConstants.notify);
-      this.array = GlobalConstants.notify;
+      this.array = data;
+      this.array.sort(function(a , b){
+          return (a.time-b.time);
+      });
+
+      console.log(data);
+      this._notificationserv.setStatus(GlobalConstants.info.username).subscribe(data1=>{
+        console.log(data1);
+      });
     });
   }
 }

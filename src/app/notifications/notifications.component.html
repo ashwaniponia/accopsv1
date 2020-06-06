@@ -3,7 +3,9 @@
   <div *ngFor = "let data of array">
     <div class="alert">
       <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-      <strong>{{data}}</strong>
+      <strong>Time : {{data.time}} {{data.Metric}}</strong>
+      <br>
+      <strong>{{data.mssg}}</strong>
     </div>
   </div>
 </div>

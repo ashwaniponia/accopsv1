@@ -13,14 +13,28 @@ export class UserServiceService {
   private _getUserUrl = "http://localhost:4000/api/updateuser/get";
   private _post = "http://localhost:4000/api/updateuser/post";
   private getImg = "http://localhost:4000/uploads";
+  private _get_a_user = "http://localhost:4000/api/getuser";
+  private _getsocket = "http://localhost:4000/api/getSocket";
   constructor(private _http:HttpClient
   ) { }
 
+  getSocket(username) : Observable<any>
+  {
+    const param1 = new HttpParams().set('username' , username);
+    return this._http.get<Updatetheuser>(this._getsocket , {params : param1});
+  }
 
   postUser(ans : FormData) : Observable<any>
   {
     return this._http.post(this._post ,ans);
   }
+
+  getUser(username) : Observable<any>
+  {
+    const param1 = new HttpParams().set('username' , username);
+    return this._http.get<Updatetheuser>(this._get_a_user , {params : param1});
+  }
+
 
   getImage(imge) : Observable<any>
   {

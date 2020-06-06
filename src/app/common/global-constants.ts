@@ -14,4 +14,6 @@ export class GlobalConstants {
     public static info;
     public static sock : boolean = false;
     public static isloggedin : boolean = false;
+    public static  socket = null;
+    public static notification_cnt = 0;
 }

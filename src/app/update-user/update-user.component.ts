@@ -13,7 +13,7 @@ import { Validators } from '@angular/forms';
   providers : [UserServiceService]
 })
 export class UpdateUserComponent implements OnInit {
-//  userModel = new User('Apple' , 'A1234' , 'contender' , 'Karandeep' , 'Bajwa' , '501 Rose building Regency Meadows Dhanori Pune ' , 'Pune' , 'India' , 411015);
+
 public searchString = "";
 public userrights : string[] = ["CREATE" , "DELETE" , "UPDATE" , "VIEW"];
 public  dealrights : string[] = ["CREATE" , "UPDATE" , "VIEW"];
@@ -246,7 +246,7 @@ public Hide = true;
           if(this.userinfo[0].imge != null)
           this.url = "http://localhost:4000/uploads/" + this.userinfo[0].imge;
 
-          
+
           console.log(this.url);
       }
       else
@@ -257,41 +257,57 @@ public Hide = true;
   }
   check(alevel , rcode)
   {
-    if(alevel == "")
-    {
-      console.log("false");
-      this.flag = false;
-      console.log(this.flag);
-      return false;
-    }
 
-    if(alevel == "L1" && rcode.match(/^[A-Z]+$/))
+    if(this.darray.includes("UPDATE"))
     {
-      console.log("false");
-      this.flag = false;
-      console.log(this.flag);
-      return false;
-    }
+          if((alevel == "") && ( rcode.match(/^[A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z]$/) || rcode.match(/^[A-Z][A-Z][A-Z][A-Z][0][0][0][0][0]$/) || rcode.match(/^[A-Z][A-Z][0][0][0][0][0][0][0]$/)  ))
+          {
+            console.log("false");
+            this.flag = false;
+            return false;
+          }
 
-    if(alevel == "L2" && rcode.match(/^[A-Z]*[0-9]$/))
-    {
-      console.log("false");
-      this.flag = false;
-      console.log(this.flag);
-      return false;
-    }
+          else if(alevel == "L1" && rcode.match(/^[A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z]$/))
+          {
+            console.log("false");
+            this.flag = false;
+            return false;
+          }
 
-    if(alevel == "L3" && rcode.match(/^[A-Z]*[0-9][0-9][0-9][0-9]$/))
-    {
-      console.log("false");
-      this.flag = false;
-      console.log(this.flag);
-      return false;
+          else if(alevel == "L2" && rcode.match(/^[A-Z][A-Z][A-Z][A-Z][0][0][0][0][0]$/))
+          {
+            console.log("false");
+            this.flag = false;
+            return false;
+          }
+
+          else if(alevel == "L3" && rcode.match(/^[A-Z][A-Z][0][0][0][0][0][0][0]$/))
+          {
+            console.log("false");
+            this.flag = false;
+            return false;
+          }
+
+          else
+          {
+            console.log("true");
+            this.flag = true;
+            return true;
+          }
     }
-    console.log("true");
-    this.flag = true;
-    console.log(this.flag);
-    return true;
+    else
+    {
+        if(rcode.match(/^[A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z]$/) || rcode.match(/^[A-Z][A-Z][A-Z][A-Z][0][0][0][0][0]$/) || rcode.match(/^[A-Z][A-Z][0][0][0][0][0][0][0]$/) )
+        {
+            this.flag = false;
+            return false;
+        }
+        else
+        {
+            this.flag = true;
+            return true;
+        }
+    }
   }
 
 
