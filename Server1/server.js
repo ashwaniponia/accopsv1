@@ -53,9 +53,4 @@ global.io.on('connection', (socket) => {
 
   /*console.log(socket.handshake.query);
   global.map.set(socket.handshake.query , socket);*/
-  socket.on('disconnect' , ()=>{
-    console.log("disconnected");
-    //global.map.clear();
-    global.map.delete(socket.handshake.query.username);
-  });
 });

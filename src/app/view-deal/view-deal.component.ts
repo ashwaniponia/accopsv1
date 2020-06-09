@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Filter1Pipe } from '../filter1.pipe'
 import { DealService} from "../deal.service";
-
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-view-deal',
   templateUrl: './view-deal.component.html',
@@ -34,11 +34,14 @@ export class ViewDealComponent implements OnInit {
 
   public array = [];
 
-  constructor(private _dealservice: DealService) { }
+  constructor(private _dealservice: DealService , private toastr : ToastrService) { }
 
   ngOnInit(): void {
     this._dealservice.getDeals().subscribe(data => {this.array = data
       console.log(data);
+    },
+    error =>{
+      this.toastr.error('Error' , error , {timeOut:5000})
     });
   }
 }

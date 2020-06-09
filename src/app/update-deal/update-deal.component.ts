@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Filter1Pipe } from '../filter1.pipe'
 import { DealService} from "../deal.service";
 import { GlobalConstants }from '../common/global-constants';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-update-deal',
   templateUrl: './update-deal.component.html',
@@ -11,9 +12,9 @@ export class UpdateDealComponent implements OnInit {
   public search_text = "";
   public search_user = "";
   public search_company = "";
-  public l1 = GlobalConstants.info.L1;
-  public l2 = GlobalConstants.info.L2;
-  public l3 = GlobalConstants.info.L3;
+  public l1 = GlobalConstants.info.L1.slice(0);
+  public l2 = GlobalConstants.info.L2.slice(0);
+  public l3 = GlobalConstants.info.L3.slice(0);
   public array1 = [];
   public array2 = [];
   public array3 = [];
@@ -36,7 +37,7 @@ export class UpdateDealComponent implements OnInit {
 
   public array = [];
 
-  constructor(private _dealservice: DealService) { }
+  constructor(private _dealservice: DealService , private toastr : ToastrService) { }
 
 
 
@@ -75,10 +76,10 @@ export class UpdateDealComponent implements OnInit {
   {
       item.Hide = true;
       this._dealservice.addtoL2(item).subscribe(data =>{
-        if(data == "Error")
-        console.log("Error");
-        else
-        console.log("Succesfully added");
+          this.toastr.success('Authorised', data , {timeOut : 5000});
+      },
+      error =>{
+          this.toastr.error('Error', error , {timeOut : 5000});
       });
   }
 
@@ -86,20 +87,20 @@ export class UpdateDealComponent implements OnInit {
   {
       item.Hide = true;
       this._dealservice.markAuthorised(item).subscribe(data =>{
-        if(data == "Error")
-        console.log("Error");
-        else
-        console.log("Succesfully added");
+        this.toastr.success('Authorised', data , {timeOut : 5000});
+      },
+      error =>{
+          this.toastr.error('Error', error , {timeOut : 5000});
       });
   }
   public func3(item)
   {
       item.Hide = true;
       this._dealservice.addtoL3(item).subscribe(data =>{
-        if(data == "Error")
-        console.log("Error");
-        else
-        console.log("Succesfully added");
+        this.toastr.success('Authorised', data , {timeOut : 5000});
+      },
+      error =>{
+          this.toastr.error('Error', error , {timeOut : 5000});
       });
   }
 
@@ -107,10 +108,10 @@ export class UpdateDealComponent implements OnInit {
   {
     item.Hide = true;
     this._dealservice.markAuthorised(item).subscribe(data =>{
-      if(data == "Error")
-      console.log("Error");
-      else
-      console.log("Succesfully added");
+    this.toastr.success('Authorised', data , {timeOut : 5000});
+    },
+    error =>{
+        this.toastr.error('Error', error , {timeOut : 5000});
     });
   }
 

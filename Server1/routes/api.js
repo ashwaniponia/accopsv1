@@ -42,25 +42,30 @@ var flag = 0;
 
 
 router.get('/getuser' , function(req , res){
-  users.findOne({username : req.query.username} , null  , function(err , data){
+  crusers.findOne({username : req.query.username} , null  , function(err , data){
       if(err)
-      res.json(err);
+      res.status(500).json(err);
       else
-      res.json(data);
+      res.status(200).json(data);
   });
 });
 
+
+router.post('/removeSocket' , function(req , res){
+      global.map.delete(req.body.username);
+      res.json("Socket removed");
+});
 
 
 router.get('/viewusers' , function(req , res){
   console.log('Get request of all users');
   users.find({}).exec( function(err , viewusers){
     if(err){
-      res.json("Error");
+      res.status(500).json("Error");
     }
     else {
       console.log(viewusers);
-      res.json(viewusers);
+      res.status(200).json(viewusers);
     }
   });
 });
@@ -88,32 +93,39 @@ router.get('/viewusers' , function(req , res){
           L3 : 1,
           regioncode : 1} , function(err , data){
             if(err)
-            res.json("Error");
+            res.status(500).json("Error");
             else {
-              res.json(data);
+              res.status(200).json(data);
             }
           });
     });
 
 
 
+
 try
 {
-    var compute = async function(arr)
+    var compute = async function(arr , res)
     {
         const session = await mongoose.startSession();
-        session.startTransaction();
+        await session.startTransaction();
+
         try
         {
-
-
+          console.log(arr.L1.length);
           var duplicate_regions = [];
+          var name_duplicates = 0;
           for(var i = 0 ; i < arr.L1.length ; i++){
             var  check1 = await crusers.find({L1 : {$in : [arr.L1[i]]}} ,null , session);
             if(check1 == null)
             throw new Error("Find Error");
-            if(check1.length > 0)
+          //  console.log(check1);
+            if(check1.length > 0 )
             {
+
+              if(check1.length == 1 && check1[0].username.localeCompare(arr.old_username) != 0)
+              duplicate_regions.push(arr.L1[i]);
+              else if(check1.length > 1)
               duplicate_regions.push(arr.L1[i]);
             }
           }
@@ -122,8 +134,12 @@ try
             var  check2 = await crusers.find({L2 : {$in : [arr.L2[i]]}} ,null , session);
             if(check2 == null)
             throw new Error("Find Error");
+            //console.log(check2.username);
             if(check2.length > 0)
             {
+              if(check2.length == 1 && check2[0].username.localeCompare(arr.old_username) != 0)
+              duplicate_regions.push(arr.L2[i]);
+              else if(check2.length > 1)
               duplicate_regions.push(arr.L2[i]);
             }
           }
@@ -135,19 +151,36 @@ try
             throw new Error("Find Error");
             if(check3.length > 0)
             {
-              duplicate_regions.push(arr.l3[i]);
+              if(check3.length == 1 && check3[0].username.localeCompare(arr.old_username) != 0)
+              duplicate_regions.push(arr.L3[i]);
+              else if(check3.length > 1)
+              duplicate_regions.push(arr.L3[i]);
             }
           }
 
 
-          if(duplicate_regions.length == 0)
+          var name_check = await crusers.find({username :  arr.new_username} , null ,session);
+          if(name_check == null)
+          throw new Error("Find Error");
+
+
+          if(arr.new_username.localeCompare(arr.old_username) != 0 && (name_check.length > 0))
+          name_duplicates = 1;
+
+
+          console.log("The check is");
+          console.log(name_duplicates);
+          console.log(duplicate_regions);
+
+
+          if(duplicate_regions.length == 0 && name_duplicates == 0)
           {
               var check4;
               if(arr.imge == null)
               {
                check4 = await upusers.findOneAndUpdate({ _id : arr._id} , {
                 $set : {
-                  username : arr.username,
+                  username : arr.new_username,
                   company :arr.company,
                   address :arr.address,
                   city : arr.city,
@@ -169,7 +202,7 @@ try
             else {
               check4 = await upusers.findOneAndUpdate({ _id : arr._id} , {
                $set : {
-                 username : arr.username,
+                 username : arr.new_username,
                  company :arr.company,
                  imge : arr.imge,
                  address :arr.address,
@@ -189,28 +222,37 @@ try
                }
              } , session );
             }
-              if(check4 == null)
-              throw new Error("UpdateError");
-              var curr_date = new Date();
-              var obj = {
-                username : arr.username,
-                message : "Some updates have been made ! Please Check !",
-                date : curr_date,
-                status : "unseen"
-              }
+
+            if(arr.old_username.localeCompare(arr.new_username) != 0)
+            {
+              console.log("names are different");
+                var change_name_in_notificationdb = await notification.updateMany({username : arr.old_username} , {$set:{username : arr.new_username}} , session);
+                if(change_name_in_notificationdb == null)
+                throw new Error("UpdateError");
+            }
+
+            if(check4 == null)
+            throw new Error("UpdateError");
+            var curr_date = new Date();
+            var obj = {
+              username : arr.new_username,
+              message : "Some updates have been made ! Please Check !",
+              date : curr_date,
+              status : "unseen"
+            }
 
 
-
-              var check5 = await notification.create([obj] , session);
-              if(check5 == null)
-              throw new Error("UpdateError");
+            var check5 = await notification.create([obj] , session);
+            if(check5 == null)
+            throw new Error("UpdateError");
           }
           await session.commitTransaction();
           session.endSession();
-          return duplicate_regions;
+          return [duplicate_regions , name_duplicates];
         }
         catch(e)
         {
+            res.status(500).json("Server Error");
             await session.abortTransaction();
             session.endSession();
             throw e;
@@ -311,7 +353,7 @@ router.post('/updateuser/post' , upload.single('imge') , async function(req , re
 
       var array = req.body.form;
 
-
+    //  var duplicates = await compute(array)
 
       if(final_check == 0)
       {
@@ -319,7 +361,8 @@ router.post('/updateuser/post' , upload.single('imge') , async function(req , re
         {
           var array = {
           _id : req.body._id,
-          username : req.body.username,
+          old_username : req.body.old_username,
+          new_username : req.body.new_username,
           imge : null,
           company :req.body.company,
           country : req.body.country,
@@ -341,7 +384,8 @@ router.post('/updateuser/post' , upload.single('imge') , async function(req , re
         {
           var array = {
           _id : req.body._id,
-          username : req.body.username,
+          old_username : req.body.old_username,
+          new_username : req.body.new_username,
           imge : req.file.originalname,
           company :req.body.company,
           address :req.body.address,
@@ -359,24 +403,29 @@ router.post('/updateuser/post' , upload.single('imge') , async function(req , re
           regioncode : JSON.parse(req.body.regioncode),
         };
        }
-
         console.log(array);
-        var duplicacy = await compute(array);
-        console.log(duplicacy);
-        if(duplicacy.length > 0){
-            JSON.stringify(duplicacy);
-            return res.json(duplicacy + " These are the regions already present in the database");
+        var check = await compute(array , res);
+      //  console.log(check[0].length);
+        if(check[0].length > 0)
+        {
+          return res.status(400).send({message : JSON.stringify(check[0])+ " These are the regions already present in the database by other user accounts"});
         }
-        var sock1 = global.map.get(req.body.username);
+        if(check[1] == 1)
+        {
+          return res.status(400).send({message : JSON.stringify(check[1]) + " This username is already present in the database in some  other user account"});
+        }
+        var sock1 = global.map.get(req.body.old_username);
+        console.log(sock1);
+
         if(sock1 != null)
         {
-          sock1.emit(req.body.username + "onUpdate" ,"Some updates have been done to your account. Please Check!!");
+          sock1.emit(req.body.old_username + "onUpdate" ,"Some updates have been done to your account. Please Login again to Check!!");
         }
-        res.json("User Updated Successfully");
+        res.status(200).json("User Updated Successfully");
       }
       else
       {
-          res.json("Same regions inserted ! User Form not Updated");
+          res.status(400).send({message : "Same regions inserted ! User Form not Updated"});
       }
 
 
@@ -387,9 +436,9 @@ router.get('/removeuser/delete/:id' , function(req , res){
   console.log('Delete request for the given user');
   users.deleteOne({"_id":req.params.id}).exec(function(err,viewusers){
   	if(err){
-  		res.json("Unsuccessful User deletion");
+  		res.status(500).json("Unsuccessful User deletion");
   	}else{
-  		res.json("Successful user deletion");
+  		res.status(200).json("Successful user deletion");
   	}
   });
 });
@@ -442,6 +491,7 @@ try
       l1.sort();
       l2.sort();
       l3.sort();
+
 
       console.log(l1);
       console.log(l2);
@@ -509,42 +559,86 @@ try
       }
       flag = 1;
       var hash = bcrypt.hashSync(req.body.password, 10);
-      var ans = {
+      var ans;
+      if(req.body.imge == "null" || req.body.imge == "undefined")
+      {
+        ans = {
+        _id : req.body._id,
         username : req.body.username,
-        imge : req.file.originalname ,
-        hash : hash ,
-        company : req.body.company,
-        address : req.body.address,
-        city : req.body.city,
-        country : req.body.country ,
+        imge : null,
+        hash: hash,
+        company :req.body.company,
+        country : req.body.country,
+        address :req.body.address,
+        city :req.body.city,
         firstname : req.body.firstname,
-        lastname : req.body.lastname,
-        orgcode : req.body.orgcode,
-        postalcode : parseInt(req.body.postalcode),
-        totaldeals : 0,
+        lastname :req.body.lastname,
+        orgcode :req.body.orgcode,
+        postalcode :parseInt(req.body.postalcode),
+        urights :JSON.parse(req.body.urights),
+        drights :JSON.parse(req.body.drights),
+        L1 : JSON.parse(req.body.L1),
+        L2 : JSON.parse(req.body.L2),
+        L3 : JSON.parse(req.body.L3),
+        regioncode : JSON.parse(req.body.regioncode),
+        Hide : true,
+        Hide1 : true,
+        totaldelas : 0,
         acceptedeals : 0,
         rejecteddeals : 0,
-
         dealspending : 0,
-
-        maxval :0,
-        Hide : true,
-
-        Hide1 : false,
-        urights : JSON.parse(req.body.urights),
-        drights : JSON.parse(req.body.drights),
+        maxval : 0
+      }
+    }
+      else
+      {
+        ans = {
+        _id : req.body._id,
+        username : req.body.username,
+        imge : req.file.originalname,
+        hash : hash ,
+        company :req.body.company,
+        address :req.body.address,
+        city :req.body.city,
+        country : req.body.country,
+        firstname : req.body.firstname,
+        lastname :req.body.lastname,
+        orgcode :req.body.orgcode,
+        postalcode :parseInt(req.body.postalcode),
+        urights :JSON.parse(req.body.urights),
+        drights :JSON.parse(req.body.drights),
         L1 : JSON.parse(req.body.L1),
-        L2 :JSON.parse(req.body.L2),
+        L2 : JSON.parse(req.body.L2),
         L3 : JSON.parse(req.body.L3),
-        regioncode : JSON.parse(req.body.regioncode)
+        regioncode : JSON.parse(req.body.regioncode),
+        Hide : true,
+        Hide1 : true,
+        totaldelas : 0,
+        acceptedeals : 0,
+        rejecteddeals : 0,
+        dealspending : 0,
+        maxval : 0
       };
+     }
       if(final_check == 1)
-      return res.json("You assigned same region to the user! User not created !")
+      return res.status(400).send({message : "You assigned same region to the user! User not created !"})
       console.log(ans);
       const session = await mongoose.startSession();
       session.startTransaction();
       try
       {
+
+          var name_check = await crusers.find({username : req.body.username} , null , session);
+          if(name_check == null)
+          throw new Error("FindError");
+
+          if(name_check.length > 0){
+
+            await session.abortTransaction();
+            session.endSession();
+            return res.status(400).send({message : "Given username is already present in the database"});
+          }
+
           var duplicacy_check1 = 0;
           var duplicate_regions = [];
           for(var i = 0 ; i < l1.length ; i++){
@@ -585,10 +679,11 @@ try
           if(duplicacy_check1 == 1)
           {
               var regions = JSON.stringify(duplicate_regions);
-              res.json(regions + " These Regions Entered are already present in the database");
+              res.status(400).send({message : regions + " These Regions Entered are already present in the database"});
           }
           else {
             crusers.create([ans] , session);
+            res.status(200).json("User successfully created");
           }
       await session.commitTransaction();
       session.endSession();
@@ -597,7 +692,7 @@ try
     {
         await session.abortTransaction();
         session.endSession();
-        res.json("User creation unsuccessful");
+        res.status(500).json("User creation unsuccessful");
         throw e;
     }
     });
@@ -613,7 +708,7 @@ router.get('/Notifications' , function(req , res){
 
     notification.find({username : req.query.username}).exec(function(err ,data){
         if(err)
-        res.json(err);
+        res.status(500).json("Server Error");
         else
         {
           var notifications = [];
@@ -642,12 +737,13 @@ router.get('/Notifications' , function(req , res){
                   username : data[i].username,
                   mssg : data[i].message,
                   time : time_swayed,
-                  Metric : metric
+                  Metric : metric,
+                  status : data[i].status
               }
               notifications.push(obj)
           }
           console.log(notifications);
-          res.json(notifications);
+          res.status(200).json(notifications);
         }
     });
 });
@@ -659,9 +755,9 @@ router.post('/updateNotifications' ,function(req , res){
   console.log("Here it is " + req.body.username);
     notification.update({username : req.body.username , status : "unseen"} , {$set : {status : "seen"}} , {"multi": true} , function(err , data){
       if(err)
-      res.json(err);
+      res.status(500).json("Server Error");
       else
-      res.json(data);
+      res.status(200).json(data);
     });
 });
 
@@ -669,10 +765,10 @@ router.post('/updateNotifications' ,function(req , res){
 router.get('/getNotificationcount' , function(req , res){
     notification.find({status : "unseen" , username : req.query.username}).exec(function(err , data){
       if(err)
-      res.json(err);
+      res.status(500).json(err);
       else {
         var cnt = data.length;
-        res.json(cnt);
+        res.status(200).json(cnt);
       }
     });
 });
@@ -738,13 +834,14 @@ try{
                 var check4 = await notification.create([obj1] , session);
                 if(check4 == null)
                 throw new Error("CreateError");
-
+                  console.log(check3[0].username);
                 var sock2 = global.map.get(check3[0].username);
+                console.log(sock2);
                 if(sock2 != null){
                   sock2.emit(check3[0].username+"L1pending" ,  "L1 Authorisation for Region code : " + req.body.region_code + " and organisation : " + req.body.orgname + " by : " + req.body.username + " is pending");
                 }
 
-                 res.json("Deal Registered Successfully");
+                 res.status(200).json("Deal Registered Successfully");
 
 
 
@@ -754,7 +851,7 @@ try{
                }
                catch(e)
                {
-                 res.json("Error in registering Deal")
+                 res.status(500).json("Error in registering Deal")
                  await session.abortTransaction();
                  session.endSession();
                  throw e;
@@ -771,7 +868,7 @@ router.get('/viewdeals', function(req , res){
   console.log("Hello");
   adddeal.find({}).exec(function(err , dealdata){
       if(err)
-      res.json("Error");
+      res.status(500).json("Server Error");
       else {
         var current_date = new Date();
         var end = moment(current_date , "DD.MM.YYYY");
@@ -817,12 +914,13 @@ router.get('/viewdeals', function(req , res){
             Hide : dealdata[i].Hide ,
             Time : [Math.round(days_remaining) , Math.round(sub)],
             Hide_description: dealdata[i].Hide_description,
-            region_code : dealdata[i].region_code
+            region_code : dealdata[i].region_code,
+            status : dealdata[i].status
           };
           array.push(x);
         }
         console.log(array);
-        res.json(array);
+        res.status(200).json(array);
       }
   });
 });
@@ -831,7 +929,7 @@ router.get('/viewdeals', function(req , res){
 
 try
 {
-  var Find1 = async  function(search)
+  var Find1 = async  function(search , res)
   {
     console.log("You are in Find1");
     console.log(search);
@@ -846,7 +944,7 @@ try
       }
       catch(e)
       {
-        res.json("Unsuccessful Find operation");
+          res.status(500).json("Server Error");
           await session.abortTransaction();
           session.endSession();
           throw e;
@@ -859,7 +957,8 @@ catch(e)
   e.message();
 }
 
-    router.get('/getdeal/L1' , async function(req , res){
+
+router.get('/getdeal/L1' , async function(req , res){
       console.log("You are here");
 
       var arr = req.query.l1;
@@ -883,7 +982,7 @@ catch(e)
           for(var x = 0 ; x < codes.length ; x++)
           {
               var search = "^" + codes[x];
-            var doc = await Find1(search);
+            var doc = await Find1(search , res);
             console.log(doc);
             if(doc == null)
             throw new Error("Error in Finding");
@@ -943,18 +1042,18 @@ catch(e)
                 array.push(x);
               }
 
-          res.json(array);
+          res.status(200).json(array);
 
 
-    });
+});
 
 
 
 
-    try
+try
+{
+    var Find2 = async  function(search , res)
     {
-      var Find2 = async  function(search)
-      {
         console.log("I am in Find2");
         console.log(search);
         session = await mongoose.startSession();
@@ -968,230 +1067,233 @@ catch(e)
           }
           catch(e)
           {
-              res.json("Unsuccessful Find Operation");
+              res.status(500).json("Server Error");
               await session.abortTransaction();
               session.endSession();
               throw e;
           }
           return ans;
-      }
     }
-    catch(e)
+}
+catch(e)
+{
+   e.message();
+}
+
+router.get('/getdeal/L2' , async function(req , res){
+    console.log("You are here");
+
+    var arr = req.query.l2;
+    console.log(arr);
+    var code = "";
+    var codes = [];
+    for(var x = 0 ; x < arr.length ; x++)
     {
-      e.message();
+        if(arr[x] != ',' && arr[x] != '0')
+        code = code + arr[x];
+        else {
+            if(code.length > 0)
+            codes.push(code);
+            code = "";
+        }
     }
+    if(code.length > 0)
+    codes.push(code);
+    console.log(codes);
+    var temp1 = [];
 
-        router.get('/getdeal/L2' , async function(req , res){
-          console.log("You are here");
-
-          var arr = req.query.l2;
-          console.log(arr);
-          var code = "";
-          var codes = [];
-          for(var x = 0 ; x < arr.length ; x++)
-          {
-            if(arr[x] != ',' && arr[x] != '0')
-            code = code + arr[x];
-            else {
-              if(code.length > 0)
-              codes.push(code);
-              code = "";
-            }
-          }
-          if(code.length > 0)
-          codes.push(code);
-          console.log(codes);
-          var temp1 = [];
-
-              for(var x = 0 ; x < codes.length ; x++)
-              {
-                  var search = "^" + codes[x];
-                  console.log(search);
+    for(var x = 0 ; x < codes.length ; x++)
+    {
+          var search = "^" + codes[x];
+          console.log(search);
                 /*var pref = "^";
                 var temp = arr[x];
                 console.log(temp);*/
-                var doc = await Find2(search);
-                console.log(doc);
+          var doc = await Find2(search , res);
+          console.log(doc);
 
-                for(var y = 0 ; y < doc.length ; y++)
-                temp1.push(doc[y]);
-              }
-              console.log(temp1);
-
-              var array = [];
-
-                  var current_date = new Date();
-                  var end = moment(current_date , "DD.MM.YYYY");
-                  for(var i =0 ; i < temp1.length ; i++)
-                  {
-                    var start = moment(temp1[i].issued_date , "DD.MM.YYYY");
-
-
-                    var rem = moment.duration(end.diff(start));
-                    var days_completed = rem.asDays();
-                    var sub = 0;
-                    var cmp = temp1[i].completion_time;
-                    var completed = 0;
-                    if(days_completed < cmp)
-                    {
-                      completed = cmp;
-                    }
-                    else {
-                      completed = days_completed;
-                    }
-                    if(cmp < days_completed)
-                    {
-                      sub = cmp;
-                    }
-                    else
-                    {
-                      sub = days_completed;
-                    }
-                    console.log(completed);
-                    var days_remaining = temp1[i].completion_time-sub;
-                    console.log(days_remaining);
-                    var x;
-                    x = {
-                      _id : temp1[i]._id,
-                      dealprogress :temp1[i].dealprogress,
-                      description : temp1[i].description,
-                      orgname : temp1[i].orgname,
-                      username : temp1[i].username,
-                      amount : temp1[i].amount,
-                      level : temp1[i].level ,
-                      Hide : temp1[i].Hide ,
-                      Time : [Math.round(days_remaining) , Math.round(sub)],
-                      Hide_description : temp1[i].Hide_description,
-                      region_code : temp1[i].region_code
-                    };
-                    array.push(x);
-                  }
-
-              res.json(array);
-        });
-
-
-        try
-        {
-          var Find3 = async  function(search)
-          {
-            session = await mongoose.startSession();
-            session.startTransaction();
-            var ans = [];
-              try
-              {
-                  ans = await adddeal.find({level : 3 , status : "Pending" , region_code : {$regex : search}} , null , session);
-                  await session.commitTransaction();
-                  session.endSession();
-              }
-              catch(e)
-              {
-                  res.json("Unsuccessful Find Operation");
-                  await session.abortTransaction();
-                  session.endSession();
-                  throw e;
-              }
-              return ans;
+          for(var y = 0 ; y < doc.length ; y++)
+              temp1.push(doc[y]);
           }
-        }
-        catch(e)
-        {
-          e.message();
-        }
+          console.log(temp1);
 
-            router.get('/getdeal/L3' , async function(req , res){
-              console.log("You are here");
+          var array = [];
 
-              var arr = req.query.l3;
-              console.log(arr);
-              var code = "";
-              var codes = [];
-              for(var x = 0 ; x < arr.length ; x++)
-              {
-                if(arr[x] != ',' && arr[x] != '0')
-                code = code + arr[x];
-                else {
-                  if(code.length > 0)
-                  codes.push(code);
-                  code = "";
+          var current_date = new Date();
+          var end = moment(current_date , "DD.MM.YYYY");
+          for(var i =0 ; i < temp1.length ; i++)
+          {
+                var start = moment(temp1[i].issued_date , "DD.MM.YYYY");
+
+
+                var rem = moment.duration(end.diff(start));
+                var days_completed = rem.asDays();
+                var sub = 0;
+                var cmp = temp1[i].completion_time;
+                var completed = 0;
+                if(days_completed < cmp)
+                {
+                    completed = cmp;
                 }
-              }
+                else
+                {
+                    completed = days_completed;
+                }
+                if(cmp < days_completed)
+                {
+                    sub = cmp;
+                }
+                else
+                {
+                    sub = days_completed;
+                }
+                console.log(completed);
+                var days_remaining = temp1[i].completion_time-sub;
+                console.log(days_remaining);
+                var x;
+                x =
+                {
+                    _id : temp1[i]._id,
+                    dealprogress :temp1[i].dealprogress,
+                    description : temp1[i].description,
+                    orgname : temp1[i].orgname,
+                    username : temp1[i].username,
+                    amount : temp1[i].amount,
+                    level : temp1[i].level ,
+                    Hide : temp1[i].Hide ,
+                    Time : [Math.round(days_remaining) , Math.round(sub)],
+                    Hide_description : temp1[i].Hide_description,
+                    region_code : temp1[i].region_code
+                  };
+                  array.push(x);
+            }
+
+            res.status(200).json(array);
+});
+
+
+try
+{
+      var Find3 = async  function(search , res)
+      {
+         session = await mongoose.startSession();
+         session.startTransaction();
+         var ans = [];
+         try
+         {
+              ans = await adddeal.find({level : 3 , status : "Pending" , region_code : {$regex : search}} , null , session);
+              await session.commitTransaction();
+              session.endSession();
+         }
+         catch(e)
+         {
+              res.status(500).json("Server Error");
+              await session.abortTransaction();
+              session.endSession();
+              throw e;
+         }
+          return ans;
+      }
+}
+catch(e)
+{
+    e.message();
+}
+
+router.get('/getdeal/L3' , async function(req , res){
+      console.log("You are here");
+
+      var arr = req.query.l3;
+      console.log(arr);
+      var code = "";
+      var codes = [];
+      for(var x = 0 ; x < arr.length ; x++)
+      {
+          if(arr[x] != ',' && arr[x] != '0')
+          code = code + arr[x];
+          else {
               if(code.length > 0)
               codes.push(code);
-              console.log(codes);
-              var temp1 = [];
+              code = "";
+          }
+      }
+      if(code.length > 0)
+      codes.push(code);
+      console.log(codes);
+      var temp1 = [];
 
-                  for(var x = 0 ; x < codes.length ; x++)
-                  {
-                      var search = "^" + codes[x];
-                      console.log(search);
+      for(var x = 0 ; x < codes.length ; x++)
+      {
+            var search = "^" + codes[x];
+            console.log(search);
                     /*var pref = "^";
                     var temp = arr[x];
                     console.log(temp);*/
-                    var doc = await Find3(search);
-                    console.log(doc);
-                    if(doc == null)
-                    throw new Error("Error in Finding");
+            var doc = await Find3(search , res);
+            console.log(doc);
+            if(doc == null)
+            throw new Error("Error in Finding");
 
-                    for(var y = 0 ; y < doc.length ; y++)
-                    temp1.push(doc[y]);
-                  }
-                  console.log(temp1);
+            for(var y = 0 ; y < doc.length ; y++)
+            temp1.push(doc[y]);
+        }
+        console.log(temp1);
 
-                  var array = [];
+        var array = [];
 
-                      var current_date = new Date();
-                      var end = moment(current_date , "DD.MM.YYYY");
-                      for(var i =0 ; i < temp1.length ; i++)
-                      {
-                        var start = moment(temp1[i].issued_date , "DD.MM.YYYY");
+        var current_date = new Date();
+        var end = moment(current_date , "DD.MM.YYYY");
+        for(var i =0 ; i < temp1.length ; i++)
+        {
+              var start = moment(temp1[i].issued_date , "DD.MM.YYYY");
 
 
-                        var rem = moment.duration(end.diff(start));
-                        var days_completed = rem.asDays();
-                        var sub = 0;
-                        var cmp = temp1[i].completion_time;
-                        var completed = 0;
-                        if(days_completed < cmp)
-                        {
-                          completed = cmp;
-                        }
-                        else {
-                          completed = days_completed;
-                        }
-                        if(cmp < days_completed)
-                        {
-                          sub = cmp;
-                        }
-                        else
-                        {
-                          sub = days_completed;
-                        }
-                        console.log(completed);
+              var rem = moment.duration(end.diff(start));
+              var days_completed = rem.asDays();
+              var sub = 0;
+              var cmp = temp1[i].completion_time;
+              var completed = 0;
+              if(days_completed < cmp)
+              {
+                  completed = cmp;
+              }
+              else {
+                  completed = days_completed;
+              }
+              if(cmp < days_completed)
+              {
+                    sub = cmp;
+              }
+              else
+              {
+                    sub = days_completed;
+              }
+              console.log(completed);
                         //console.log(days_remaining);
-                        var days_remaining = temp1[i].completion_time-sub;
-                        console.log(days_remaining);
-                        var x;
-                        x = {
-                          _id : temp1[i]._id,
-                          dealprogress :temp1[i].dealprogress,
-                          description : temp1[i].description,
-                          orgname : temp1[i].orgname,
-                          username : temp1[i].username,
-                          amount : temp1[i].amount,
-                          level : temp1[i].level ,
-                          Hide : temp1[i].Hide ,
-                          Time : [Math.round(days_remaining) , Math.round(sub)],
-                          Hide_description : temp1[i].Hide_description,
-                          region_code : temp1[i].region_code
-                        };
-                        array.push(x);
-                      }
+              var days_remaining = temp1[i].completion_time-sub;
+              console.log(days_remaining);
+              var x;
+              x =
+              {
+                _id : temp1[i]._id,
+                dealprogress :temp1[i].dealprogress,
+                description : temp1[i].description,
+                orgname : temp1[i].orgname,
+                username : temp1[i].username,
+                amount : temp1[i].amount,
+                level : temp1[i].level ,
+                Hide : temp1[i].Hide ,
+                Time : [Math.round(days_remaining) , Math.round(sub)],
+                Hide_description : temp1[i].Hide_description,
+                region_code : temp1[i].region_code
+              };
+              array.push(x);
+        }
 
-                  res.json(array);
+        res.status(200).json(array);
 
 
-            });
+});
 
 
 
@@ -1213,17 +1315,6 @@ try
              date : curr_date,
              status : "unseen"
            }
-
-           var sock = global.map.get(req.body.item.username);
-           if(sock != null)
-           {
-             sock.emit(req.body.item.username + "onL1auth" , "Your L1 Authorisation for Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " is approved");
-           }
-
-
-
-
-
 
            var check2 = await notification.create([obj] , session);
            if(check2 == null)
@@ -1259,12 +1350,20 @@ try
            throw new Error("CreateError");
 
 
+
+           var sock = global.map.get(req.body.item.username);
+           if(sock != null)
+           {
+             sock.emit(req.body.item.username + "onL1auth" , "Your L1 Authorisation for Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " is approved");
+           }
+
+
            var sock2 = global.map.get(check3[0].username);
            if(sock2 != null){
              sock2.emit(check3[0].username+"L2pending" ,  "L2 Authorisation for Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " by : " + req.body.item.username + " is pending");
            }
 
-           res.json("Successful L1 Authentication");
+           res.status(200).json("Successful L1 Authentication");
            await session.commitTransaction();
            session.endSession();
        }
@@ -1272,7 +1371,7 @@ try
        {
           await session.abortTransaction();
           session.endSession();
-          res.json("Unsuccessful L1 Authentication");
+          res.status(500).json("Server Error");
           throw e;
        }
 
@@ -1306,13 +1405,6 @@ try
               status : "unseen"
             }
             var f = 0;
-
-            var sock = global.map.get(req.body.item.username);
-            if(sock != null)
-            {
-              sock.emit(req.body.item.username + "onL3auth" , "Your deal having Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " is shifted to L3 approval");
-            }
-
             var check2 = await notification.create([obj] , session);
             if(check2 == null)
             throw new Error("CreateError");
@@ -1344,19 +1436,27 @@ try
            if(check4 == null)
            throw new Error("CreateError");
 
+            var sock = global.map.get(req.body.item.username);
+            if(sock != null)
+            {
+              sock.emit(req.body.item.username + "onL3auth" , "Your deal having Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " is shifted to L3 approval");
+            }
+
+
+
            var sock2 = global.map.get(check3[0].username);
            if(sock2 != null){
              sock2.emit(check3[0].username+"L3pending" ,  "L2 Authorisation for Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " by : " + req.body.item.username + " is pending");
            }
 
 
-            res.json("L3 authorisation successful");
+            res.status(200).json("L2 authorisation successful");
             await session.commitTransaction();
             session.endSession();
           }
           catch(e)
           {
-            res.json("L3 authorisation unsuccessful");
+            res.status(500).json("L3 authorisation unsuccessful");
             await session.abortTransaction();
             session.endSession();
             throw e;
@@ -1404,20 +1504,9 @@ try
           console.log(check4);
           if(check4 == null)
             throw new Error("Error in Update function");
-
-          //  console.log(check3[i].username);
-          console.log(check3[i].username);
           const check5 = await adddeal.updateOne({username : check3[i].username , orgname : req.body.item.orgname} , {$set : {status : "Rejected"}} , session);
           if(check5 == null)
             throw new Error("Error in Update function");
-
-            var f = 0;
-
-            var sock = global.map.get(check3[i].username);
-            if(sock != null)
-            {
-              sock.emit(check3[i].username + "reject" , "Your deal for Region code : " + check3[i].region_code + " and organisation : " + check3[i].orgname + " is rejected");
-            }
 
             var mssg = "Your deal for Region code : " + check3[i].region_code + " and organisation : " + check3[i].orgname + " is rejected";
             var curr_date = new Date();
@@ -1425,7 +1514,7 @@ try
               username : check3[i].username,
               message : mssg,
               date : curr_date,
-              status : unseen
+              status : "unseen"
             }
 
 
@@ -1440,7 +1529,22 @@ try
         var obj = {
           username : req.body.item.username,
           message : mssg,
-          date : curr_date
+          date : curr_date,
+          status : "unseen"
+        }
+
+        var check7 = await notification.create([obj] , session);
+        if(check7  == null)
+        throw new Error("CreateError");
+
+
+        for(var i =  0 ; i < check3.length ; i++)
+        {
+            var sock = global.map.get(check3[i].username);
+            if(sock != null)
+            {
+              sock.emit(check3[i].username + "reject" , "Your deal for Region code : " + check3[i].region_code + " and organisation : " + check3[i].orgname + " is rejected");
+            }
         }
 
         var sock1 = global.map.get(req.body.item.username);
@@ -1450,10 +1554,8 @@ try
         }
 
 
-        var check7 = await notification.create([obj] , session);
-        if(check7  == null)
-        throw new Error("CreateError");
-        res.json("Successful Authentication");
+
+        res.status(200).json("Successful Authentication");
         await session.commitTransaction();
         session.endSession();
     }
@@ -1461,7 +1563,7 @@ try
     {
       await session.abortTransaction();
       session.endSession();
-      res.json("Unsuccessful Authentication");
+      res.status(500).json("Server Error");
       throw e;
     }
   });

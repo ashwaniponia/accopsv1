@@ -14,7 +14,7 @@
     </div>
 
     <div class = "form-group">
-      <label for = "orgcode"> Organisation </label>
+      <label for = "orgcode"> Organisation Code </label>
       <input type = "text" class = "form-control" name = "orgcode" [(ngModel)] =userModel.orgcode readonly>
     </div>
 
@@ -31,6 +31,62 @@
     <div class = "form-group">
       <label for = "lastname"> Lastname </label>
       <input type = "text" class = "form-control" name = "lastname" [(ngModel)]= userModel.lastname   readonly>
+    </div>
+
+    <div   *ngIf="userModel.L1.length > 0"> L1</div>
+
+    <ul class="list-group" *ngFor="let data of userModel.L1">
+      <li class="list-group-item list-group-item-secondary">{{data}}</li>
+    </ul>
+    <br>
+
+    <div   *ngIf="userModel.L2.length > 0"> L2</div>
+
+    <ul class="list-group" *ngFor="let data of userModel.L2">
+    <li class="list-group-item list-group-item-secondary">{{data}}</li>
+
+    </ul>
+    <br>
+
+    <div   *ngIf="userModel.L3.length > 0"> L3</div>
+
+    <ul class="list-group" *ngFor="let data of userModel.L3">
+    <li class="list-group-item list-group-item-secondary">{{data}}</li>
+    <br>
+    </ul>
+    <br>
+
+    <div   *ngIf="userModel.regioncode.length > 0">Region Codes</div>
+
+    <ul class="list-group" *ngFor="let data of userModel.regioncode">
+    <li class="list-group-item list-group-item-secondary">{{data}}</li>
+    <br>
+    </ul>
+    <br>
+
+    <div class = "form-group">
+      <label for = "maxval"> Maximum Deal Package </label>
+      <input type = "text" class = "form-control" name = "maxval" [(ngModel)] =userModel.maxval readonly>
+    </div>
+
+    <div class = "form-group">
+      <label for = "totaldeals"> Total Deals </label>
+      <input type = "text" class = "form-control" name = "totaldeals" [(ngModel)] =userModel.totaldeals readonly>
+    </div>
+
+    <div class = "form-group">
+      <label for = "acceptedeals"> Accepted Deals </label>
+      <input type = "text" class = "form-control" name = "acceptedeals" [(ngModel)] =userModel.acceptedeals readonly>
+    </div>
+
+    <div class = "form-group">
+      <label for = "dealspending"> Pending Deals </label>
+      <input type = "text" class = "form-control" name = "dealspending" [(ngModel)] =userModel.dealspending readonly>
+    </div>
+
+    <div class = "form-group">
+      <label for = "rejecteddeals"> Deals Rejected </label>
+      <input type = "text" class = "form-control" name = "rejecteddeals" [(ngModel)] =userModel.rejecteddeals readonly>
     </div>
 
     <div class = "form-group">

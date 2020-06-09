@@ -7,13 +7,15 @@ import { promise } from 'protractor';
 import { resolve } from 'dns';
 import { GlobalConstants } from '../common/global-constants';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+
 @Component({
   selector: 'app-create-deal',
   templateUrl: './create-deal.component.html',
   styleUrls: ['./create-deal.component.css']
 })
 export class CreateDealComponent implements OnInit {
-  constructor(private _dealservice:DealService , private router : Router) { }
+  constructor(private _dealservice:DealService , private router : Router , private toastr : ToastrService) { }
   DummyDeal = new Deal("" , 0 , "" , 0 , 0 , "");
   public RegionCode = GlobalConstants.info.regioncode;
   public message;
@@ -24,17 +26,16 @@ export class CreateDealComponent implements OnInit {
 
     if(dealForm.errors)
     {
-        alert("Filling out all details is mandatory");
+        this.toastr.error('Error',"Filling out all details is mandatory" , {timeOut : 5000});
     }
     else
     {
          this._dealservice.addDeal(this.DummyDeal.OrgName,this.DummyDeal.amount,this.DummyDeal.description , this.DummyDeal.time , this.DummyDeal.regioncode , GlobalConstants.info.username).subscribe(params =>{
            this.message = params;
             dealForm.resetForm();
-           alert(this.message);
+             this.toastr.success('Deal Created',this.message, {timeOut : 5000});
 
-         },error =>{this.message=error  ;    alert("Error in Submission"); },() =>{
-        });
+         },error =>{this.message=error  ;    this.toastr.error('Error',error , {timeOut : 5000}); });
     }
   }
 }

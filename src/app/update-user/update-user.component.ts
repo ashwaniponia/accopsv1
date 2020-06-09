@@ -6,6 +6,7 @@ import { UserServiceService } from '../user-service.service';
 import { Observable } from 'rxjs';
 import { Updatetheuser } from '../updatetheuser';
 import { Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-update-user',
   templateUrl: './update-user.component.html',
@@ -24,7 +25,9 @@ public flag :  boolean = false;
 public url ="assets/img/images.jpg";
 public selectedImage = null ;
 public Hide = true;
-  constructor(private _fb: FormBuilder , private _userservice : UserServiceService) { }
+public old_name;
+public new_name;
+  constructor(private _fb: FormBuilder , private _userservice : UserServiceService , private toastr : ToastrService) { }
 
   public UserForm;
   public hideform = true;
@@ -246,12 +249,13 @@ public Hide = true;
           if(this.userinfo[0].imge != null)
           this.url = "http://localhost:4000/uploads/" + this.userinfo[0].imge;
 
+          this.old_name =this.userinfo[0].username;
 
           console.log(this.url);
       }
       else
       {
-          alert("User does not exist");
+          this.toastr.error('Error' , "User does not Exist" , {timeOut:5000});
       }
     });
   }
@@ -346,13 +350,16 @@ public Hide = true;
 
         regioncodes.push(control.value.region_code);
     });
+
+
     this.Hide = true;
     const ans = new FormData();
     ans.append('_id' , this.userinfo[0]._id);
     ans.append(  'company' , this.UserForm.get('company').value );
     ans.append(  'imge' , this.selectedImage);
     ans.append(  'orgcode' , this.UserForm.get('orgcode').value);
-    ans.append(  'username' , this.UserForm.get('username').value );
+    ans.append(  'old_username' , this.old_name);
+    ans.append( 'new_username' , this.UserForm.get('username').value);
     ans.append(  'firstname' , this.UserForm.get('firstname').value );
     ans.append(  'lastname' , this.UserForm.get('lastname').value );
     ans.append(  'regioncode' , JSON.stringify(regioncodes) );
@@ -369,9 +376,13 @@ public Hide = true;
     console.log(ans);
 
 
-    if(!this.UserForm.valid ||  this.flag == true)
+    if(!this.UserForm.valid)
     {
-      alert("Filling all details is mandatory");
+      this.toastr.error('Error' , "Filling all details is mandatory" , {timeOut:5000});
+    }
+    else if(this.flag == true)
+    {
+      this.toastr.error('Error' , "Appropriate region is not filled" , {timeOut:5000});
     }
     else
     {
@@ -380,12 +391,13 @@ public Hide = true;
          data =>
          {
              this.message = data;
-             alert(this.message);
+             this.toastr.success('Authorised', data , {timeOut : 5000});
          },
          error =>
          {
            this.message = error;
-           alert(this.message);
+           console.log(error);
+           this.toastr.error('Error', error, {timeOut : 5000});
          }
        );
     }

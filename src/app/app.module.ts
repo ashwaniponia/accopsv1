@@ -27,8 +27,8 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { JwtInterceptor, ErrorInterceptor, fakeBackendProvider } from './_helpers';
 import { NotificationsComponent } from './notifications/notifications.component';
-//import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-//import { ToastrModule } from 'ngx-toastr';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToastrModule } from 'ngx-toastr';
 
 
 @NgModule({
@@ -57,6 +57,8 @@ import { NotificationsComponent } from './notifications/notifications.component'
   ],
   imports: [
     AlertModule.forRoot(),
+    BrowserAnimationsModule,
+    ToastrModule.forRoot(),
     BrowserModule,
     AppRoutingModule,
     FormsModule,

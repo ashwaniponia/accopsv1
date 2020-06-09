@@ -8,6 +8,7 @@ import io from 'socket.io-client';
 import { environment } from '@environments/environment';
 import { User } from '@app/_models';
 import { User1 } from '../_models/user1';
+import {UserServiceService } from  '../user-service.service'
 @Injectable({ providedIn: 'root' })
 export class AccountService {
     private userSubject: BehaviorSubject<User>;
@@ -16,7 +17,8 @@ export class AccountService {
     public socket=null;
     constructor(
         private router: Router,
-        private http: HttpClient
+        private http: HttpClient,
+        private _userserv : UserServiceService
     ) {
         this.userSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('user')));
         this.user = this.userSubject.asObservable();
@@ -44,6 +46,11 @@ export class AccountService {
 
     logout() {
         // remove user from local storage and set current user to null
+        var target_user = JSON.parse(localStorage.getItem('user'));
+        console.log(target_user.username);
+        this._userserv.removeSocket(target_user.username).subscribe(data=>{
+            console.log(data)}
+        );
         localStorage.removeItem('user');
         this.userSubject.next(null);
         this.router.navigate(['/account/login']);

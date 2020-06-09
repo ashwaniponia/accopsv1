@@ -22,8 +22,16 @@ export class SidebarComponent  {
   this.EditUserFlag = true
   this.DealRightsFlag = true
 
-  this.DealRights = GlobalConstants.info.drights;
-  this.UserRights = GlobalConstants.info.urights;
+  this.DealRights = GlobalConstants.info.drights.slice(0);
+  this.UserRights = GlobalConstants.info.urights.slice(0);
+  console.log("Look!!");
+
+  var pos = this.UserRights.indexOf('DELETE');
+  if(pos != -1){
+    this.UserRights.splice(pos , 1);
+  }
+  console.log(GlobalConstants.info.urights);
+
 
 
   }

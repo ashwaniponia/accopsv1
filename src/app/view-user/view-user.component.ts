@@ -4,6 +4,7 @@ import { Filter2Pipe} from '../filter2.pipe';
 import { UserServiceService } from '../user-service.service';
 import { User1 } from '../User1';
 import { GlobalConstants } from '../common/global-constants';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-view-user',
   templateUrl: './view-user.component.html',
@@ -17,8 +18,9 @@ export class ViewUserComponent implements OnInit {
   public search_company="";
   public array = [];
   public drights = GlobalConstants.info.drights;
+  public urights = GlobalConstants.info.urights;
 
-  constructor(private _userservice : UserServiceService) { }
+  constructor(private _userservice : UserServiceService  , private toastr : ToastrService) { }
 
   ngOnInit(): void {
     this._userservice.getUsers().subscribe(resUserData => {this.array = resUserData
@@ -29,6 +31,9 @@ export class ViewUserComponent implements OnInit {
         this.array[i].imge = "http://localhost:4000/uploads/" + this.array[i].imge;
         else
         this.array[i].imge = "assets/img/images.jpg";
+
+        console.log("look over here ");
+        console.log(this.urights);
       }
     });
   }
@@ -37,10 +42,10 @@ export class ViewUserComponent implements OnInit {
    //console.log(id)
      item.Hide1 = true;
      this._userservice.removeUser(item._id).subscribe(TempData => {
-      console.log('Success')
+        this.toastr.success('Authorised',TempData , {timeOut : 5000});
     },
-    error =>console.log(error),() =>{
-      console.log('UserApiService : Delete completed')
+    error=>{
+        this.toastr.error('Error', error , {timeOut : 5000});
     });
   }
 }
