@@ -139,14 +139,14 @@
           <b>{{item.username}}</b>
         </td>
 
-        <td *ngIf="item.status == 'Pending'">
+        <td *ngIf="item.status == 'Pending'" style="padding : 50px 0px 0px 0px;">
           <span class="badge badge-warning">Pending</span>
         </td>
-        <td *ngIf="item.status == 'Authorised'">
+        <td *ngIf="item.status == 'Authorised'" style="padding : 50px 0px 0px 0px;">
           <span class="badge badge-success">Authorised </span>
         </td>
-        <td *ngIf="item.status == 'Rejected'">
-          <span class="badge badge-success">Rejected</span>
+        <td *ngIf="item.status == 'Rejected'" style="padding : 50px 0px 0px 0px;">
+          <span class="badge badge-danger">Rejected</span>
         </td>
       </tr>
     </tbody>

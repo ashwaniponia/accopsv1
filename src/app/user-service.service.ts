@@ -14,14 +14,13 @@ export class UserServiceService {
   private _post = "http://localhost:4000/api/updateuser/post";
   private getImg = "http://localhost:4000/uploads";
   private _get_a_user = "http://localhost:4000/api/getuser";
-  private _getsocket = "http://localhost:4000/api/getSocket";
+  private _removesocket = "http://localhost:4000/api/removeSocket";
   constructor(private _http:HttpClient
   ) { }
 
-  getSocket(username) : Observable<any>
+  removeSocket(username) : Observable<any>
   {
-    const param1 = new HttpParams().set('username' , username);
-    return this._http.get<Updatetheuser>(this._getsocket , {params : param1});
+    return this._http.post(this._removesocket , username);
   }
 
   postUser(ans : FormData) : Observable<any>

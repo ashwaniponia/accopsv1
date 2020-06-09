@@ -1,11 +1,21 @@
 <div class = "container">
 
   <div *ngFor = "let data of array">
-    <div class="alert">
+    <div class="alert1" *ngIf="function(data.status)" >
       <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
       <strong>Time : {{data.time}} {{data.Metric}}</strong>
       <br>
       <strong>{{data.mssg}}</strong>
     </div>
+    <br>
+
+    <div class = "alert2" *ngIf="!function(data.status)">
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+      <strong>Time : {{data.time}} {{data.Metric}}</strong>
+      <br>
+      <strong>{{data.mssg}}</strong>
+    </div>
+    <br>
+    
   </div>
 </div>

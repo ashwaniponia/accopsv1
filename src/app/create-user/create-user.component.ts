@@ -5,6 +5,7 @@ import { FormBuilder , FormGroup , FormArray} from '@angular/forms';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Validators } from '@angular/forms';
+import {ToastrService} from 'ngx-toastr';
 @Component({
   selector: 'app-create-user',
   templateUrl: './create-user.component.html',
@@ -16,12 +17,12 @@ export class CreateUserComponent implements OnInit {
   public  dealrights : string[] = ["CREATE" , "UPDATE" , "VIEW"];
   public darray : string[] = [];
   public  uarray : string[] = [];
-  public selectedImage ;
+  public selectedImage = null ;
   public UserForm;
   public  flag : boolean = false;
   public message = "";
   public url ="assets/img/images.jpg";
-  constructor(private _fb:FormBuilder ,private _userservice:UserServiceService) { }
+  constructor(private _fb:FormBuilder ,private _userservice:UserServiceService , private toastr : ToastrService) { }
 
   ngOnInit(): void {
     this.UserForm = this._fb.group({
@@ -250,15 +251,15 @@ export class CreateUserComponent implements OnInit {
 
     if(!this.UserForm.valid)
     {
-      alert("Filling all details is mandatory");
+      this.toastr.error('Error' , "Filling all details is mandatory" , {timeOut:5000});
     }
     else if(this.flag == true)
     {
-      alert("Appropriate region is not filled");
+      this.toastr.error('Error' , "Appropriate region is not filled" , {timeOut:5000});
     }
     else if(this.UserForm.controls.password.value.length < 6)
     {
-      alert("Password length should be at least 6");
+        this.toastr.error('Error' , "Password length should be at least 6" , {timeOut:5000});
     }
     else
     {
@@ -266,10 +267,9 @@ export class CreateUserComponent implements OnInit {
       this._userservice.addUser(ans).subscribe(params =>
         {
             this.message = params;
-            alert(this.message);
+            this.toastr.success('User Created' , this.message , {timeOut : 5000});
         },
-        error =>{ this.message = error;  alert(this.message) },() =>{
-        });
+        error =>{ this.message = error;   this.toastr.error('Error' , this.message , {timeOut : 5000});    });
     }
   }
 }

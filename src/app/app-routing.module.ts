@@ -28,6 +28,7 @@ const routes: Routes = [
   //{path: '', redirectTo: '/DASHBOARD', pathMatch : 'full'
   //},
     { path: 'account', loadChildren: accountModule },
+    { path: '',   redirectTo: '/DASHBOARD', pathMatch: 'full' }, 
 
     // otherwise redirect to home
     { path: 'DASHBOARD' , component : DashboardComponent ,canActivate:[AuthGuard],

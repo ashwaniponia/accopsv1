@@ -3,6 +3,7 @@ import { AccountService } from './_services';
 import {UserServiceService} from './user-service.service';
 import { User } from './_models';
 import { GlobalConstants } from './common/global-constants';
+import { ToastrService } from 'ngx-toastr';
 import io from 'socket.io-client';
 declare var $: any;
 @Component({ selector: 'app', templateUrl: 'app.component.html' })
@@ -10,7 +11,7 @@ export class AppComponent  {
     user: User;
     public socket= null;
     public data;
-    constructor(private accountService: AccountService , private _userservice : UserServiceService) {
+    constructor(private accountService: AccountService , private _userservice : UserServiceService , private toastr : ToastrService) {
         this.accountService.user.subscribe(x =>{
         this.user = x
         GlobalConstants.info = x;
@@ -21,8 +22,61 @@ export class AppComponent  {
             this.socket.on('connect' , ()=>{
               console.log("I am already inside");
               this.socket.emit('username' , GlobalConstants.info.username);
+
+                this.socket.on(GlobalConstants.info.username + "reject" , (data)=>{
+                    this.toastr.clear();
+                    this.data = data;
+                    this.toastr.error('Rejected', data , {timeOut : 5000});
+                    GlobalConstants.notification_cnt =   GlobalConstants.notification_cnt+1;
+                });
+                this.socket.on(GlobalConstants.info.username + "auth" , (data)=>{
+                    this.toastr.clear();
+                    this.data = data;
+                    this.toastr.success('Authorised', data , {timeOut : 5000});
+                    GlobalConstants.notification_cnt =   GlobalConstants.notification_cnt+1;
+                });
+                this.socket.on(GlobalConstants.info.username + "onL1auth" , (data)=>{
+                    this.toastr.clear();
+                    this.data = data;
+                    this.toastr.success('Authorised', data , {timeOut : 5000});
+                    GlobalConstants.notification_cnt =   GlobalConstants.notification_cnt+1;
+                });
+                this.socket.on(GlobalConstants.info.username + "onL3auth" , (data)=>{
+                   this.toastr.clear();
+                    this.data = data;
+                    this.toastr.success('Authorised', data , {timeOut : 5000});
+                      GlobalConstants.notification_cnt =   GlobalConstants.notification_cnt+1;
+                });
+                this.socket.on(GlobalConstants.info.username + "onUpdate" , (data)=>{
+                  this.toastr.clear();
+                    this.data = data;
+                      this.toastr.success('Updated', data , {timeOut : 5000});
+                      GlobalConstants.notification_cnt =   GlobalConstants.notification_cnt+1;
+                });
+
+                this.socket.on(GlobalConstants.info.username + "L1pending" , (data)=>{
+                    this.toastr.clear();
+                    this.data = data;
+                    this.toastr.warning('Pending', data , {timeOut : 5000});
+                    GlobalConstants.notification_cnt =   GlobalConstants.notification_cnt+1;
+                });
+                this.socket.on(GlobalConstants.info.username + "L2pending" , (data)=>{
+                    this.toastr.clear();
+                    this.data = data;
+                    this.toastr.warning('Pending', data , {timeOut : 5000});
+                    GlobalConstants.notification_cnt =   GlobalConstants.notification_cnt+1;
+                });
+              this.socket.on(GlobalConstants.info.username + "L3pending" , (data)=>{
+                    this.toastr.clear();
+                    this.data = data;
+                    this.toastr.warning('Pending', data , {timeOut : 5000});
+                    GlobalConstants.notification_cnt =   GlobalConstants.notification_cnt+1;
+                });
             });
         }
+
+        //console.log(this.socket);
+        //console.log(GlobalConstants.socket);
      });
 
 
@@ -32,52 +86,7 @@ export class AppComponent  {
         this.accountService.logout();
     }
 
-    ngOnInit()
+    /*ngOnInit()
     {
-          console.log(this.socket);
-          //console.log(GlobalConstants.socket);
-          if(this.socket != null && GlobalConstants.isloggedin == true){
-            this.socket.on(GlobalConstants.info.username + "reject" , (data)=>{
-                this.data = data;
-                alert(data);
-                GlobalConstants.notification_cnt =   GlobalConstants.notification_cnt+1;
-            });
-            this.socket.on(GlobalConstants.info.username + "auth" , (data)=>{
-                this.data = data;
-                alert(data);
-                GlobalConstants.notification_cnt =   GlobalConstants.notification_cnt+1;
-            });
-            this.socket.on(GlobalConstants.info.username + "onL1auth" , (data)=>{
-                this.data = data;
-                alert(data);
-                GlobalConstants.notification_cnt =   GlobalConstants.notification_cnt+1;
-            });
-            this.socket.on(GlobalConstants.info.username + "onL3auth" , (data)=>{
-                this.data = data;
-                GlobalConstants.notification_cnt =   GlobalConstants.notification_cnt+1;
-                alert(data);
-            });
-            this.socket.on(GlobalConstants.info.username + "onUpdate" , (data)=>{
-                this.data = data;
-                GlobalConstants.notification_cnt =   GlobalConstants.notification_cnt+1;
-                alert(data);
-            });
-
-            this.socket.on(GlobalConstants.info.username + "L1pending" , (data)=>{
-                this.data = data;
-                GlobalConstants.notification_cnt =   GlobalConstants.notification_cnt+1;
-                alert(data);
-            });
-            this.socket.on(GlobalConstants.info.username + "L2pending" , (data)=>{
-                this.data = data;
-                GlobalConstants.notification_cnt =   GlobalConstants.notification_cnt+1;
-                alert(data);
-            });
-          this.socket.on(GlobalConstants.info.username + "L3pending" , (data)=>{
-                this.data = data;
-                GlobalConstants.notification_cnt =   GlobalConstants.notification_cnt+1;
-                alert(data);
-            });
-          }
-    }
+    }*/
 }
