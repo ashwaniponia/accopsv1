@@ -1304,7 +1304,9 @@ try
        session.startTransaction();
        try
        {
+           console.log(req.body);
            var check1 = await adddeal.updateOne({_id : req.body.item._id} , {$inc : {level : 1}} ,session);
+           console.log(check1);
            if(check1 == null)
            throw new Error("UpdateError");
            var mssg = "Your L1 Authorisation for Region code : " + req.body.item.region_code + " and organisation : " + req.body.item.orgname + " is approved";
@@ -1391,7 +1393,7 @@ try
         session.startTransaction();
           try
           {
-            var check1 = await adddeal.updateOne({_id : req.body.item._id} , {$inc : {level : 1}} , session);
+            var check1 = await adddeal.updateOne({_id : req.body.item._id } , {$inc : {level : 1}} , session);
             if(check1 == null)
             throw new Error("UpdateError");
 
@@ -1477,7 +1479,7 @@ try
     try
     {
         console.log("helloauth");
-        const check1 = await adddeal.updateOne({_id : req.body.item._id} , {$set : {status : "Authorised"}} , session);
+        const check1 = await adddeal.updateOne({_id : req.body.item._id } , {$set : {status : "Authorised"}} , session);
         if(check1 == null)
         throw new Error("Error in Update function 1");
 
@@ -1488,7 +1490,7 @@ try
 
         if(check2 == null)
           throw new Error("Error in Update function 2");
-        const check3 = await adddeal.find({region_code : req.body.item.region_code , orgname : req.body.item.orgname , username : {$ne : req.body.item.username}} , null , session);
+        const check3 = await adddeal.find({region_code : req.body.item.region_code , orgname : req.body.item.orgname , username : {$ne : req.body.item.username} , status :"Pending"} , null , session);
         if(check3 == null)
           throw new Error("Error in Find function");
 
@@ -1504,7 +1506,7 @@ try
           console.log(check4);
           if(check4 == null)
             throw new Error("Error in Update function");
-          const check5 = await adddeal.updateOne({username : check3[i].username , orgname : req.body.item.orgname} , {$set : {status : "Rejected"}} , session);
+          const check5 = await adddeal.updateOne({username : check3[i].username , orgname : req.body.item.orgname , status : "Pending" , region_code:req.body.item.region_code} , {$set : {status : "Rejected"}} , session);
           if(check5 == null)
             throw new Error("Error in Update function");
 
