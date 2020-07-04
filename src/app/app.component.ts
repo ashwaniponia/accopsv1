@@ -74,9 +74,6 @@ export class AppComponent  {
                 });
             });
         }
-
-        //console.log(this.socket);
-        //console.log(GlobalConstants.socket);
      });
 
 
@@ -85,8 +82,4 @@ export class AppComponent  {
     logout() {
         this.accountService.logout();
     }
-
-    /*ngOnInit()
-    {
-    }*/
 }
